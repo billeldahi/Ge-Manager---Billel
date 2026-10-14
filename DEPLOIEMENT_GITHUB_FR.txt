@@ -1,0 +1,27 @@
+GE MANAGER v4 — SARL VERY FAST
+Publication sur GitHub Pages (HTTPS)
+
+FICHIERS À LA RACINE DU DÉPÔT
+- index.html
+- manifest.webmanifest
+- sw.js
+- icon.svg
+- .nojekyll
+
+ÉTAPES
+1. Connectez-vous à GitHub et créez un dépôt, par exemple ge-manager.
+2. Choisissez Public si vous utilisez GitHub Pages gratuitement et que le dépôt peut être public. N’y stockez aucune donnée opérationnelle : l’application n’envoie pas les données dans le dépôt.
+3. Dans le dépôt, choisissez Add file > Upload files et téléversez les fichiers ci-dessus à la racine (pas le ZIP lui-même).
+4. Cliquez sur Commit changes.
+5. Ouvrez Settings > Pages.
+6. Sous Build and deployment, choisissez Deploy from a branch.
+7. Choisissez la branche main et le dossier /(root), puis Save.
+8. Attendez que GitHub publie le site. L’adresse apparaîtra dans Settings > Pages, normalement sous la forme https://VOTRE-NOM.github.io/ge-manager/.
+9. Ouvrez cette adresse dans Chrome sur Android, puis le menu ⋮ > Installer l’application ou Ajouter à l’écran d’accueil.
+
+IMPORTANT
+- GitHub Pages fournit HTTPS et héberge les fichiers de l’application, mais ne donne PAS accès au compte Google et n’active PAS la synchronisation Drive.
+- Les données actuelles sont stockées localement dans le navigateur de l’appareil. Elles ne sont pas partagées entre appareils.
+- Exportez régulièrement une sauvegarde JSON et gardez-la dans un endroit sûr.
+- N’ajoutez jamais de mot de passe, jeton OAuth ou clé secrète dans les fichiers publics du dépôt.
+- Le fonctionnement hors connexion nécessite le premier chargement réussi en ligne; le cache est géré par sw.js.
