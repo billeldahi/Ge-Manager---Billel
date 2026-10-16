@@ -1,0 +1,1384 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="GE Manager — gestion hors ligne du parc de groupes électrogènes, sites, pièces et interventions.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>GE Manager — Groupes électrogènes</title>
+<style>
+:root{--bg:#eef1f7;--card:#fff;--ink:#14203a;--muted:#6b7690;--line:#e3e8f1;--primary:#2459e8;--primary-soft:#e8eefd;--dark:#0e1a33;--danger:#d6362b;--ok:#12a05c;--warn:#d98a06;--bolt:#f5b50a;--r-card:18px;--r-btn:14px;--r-in:12px;--shadow:0 1px 2px rgba(20,32,58,.05),0 10px 26px -10px rgba(20,32,58,.16);--shadow-sm:0 1px 2px rgba(20,32,58,.05),0 4px 12px -6px rgba(20,32,58,.14)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.4;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}
+:focus-visible{outline:3px solid rgba(36,89,232,.35);outline-offset:2px}
+.app{min-height:100vh;max-width:1100px;margin:auto;background:var(--bg)}
+header{background:var(--dark);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 20px 22px;position:sticky;top:0;z-index:5;border-radius:0 0 26px 26px;box-shadow:0 10px 28px -12px rgba(14,26,51,.55)}
+.header-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.header-row>div:first-child{display:flex;align-items:center;gap:13px;min-width:0}
+.logo{flex:none;width:44px;height:44px;border-radius:14px;background:var(--bolt);color:var(--dark);display:flex;align-items:center;justify-content:center;font-size:23px;box-shadow:0 6px 14px -6px rgba(245,181,10,.75)}
+.brand{font-weight:800;font-size:21px;letter-spacing:-.02em;line-height:1.1}
+.sub{font-size:12px;color:#9fb0cf;margin-top:4px;line-height:1.3}
+.iconbtn{background:#1c2940;color:#fff;border-radius:12px;padding:10px 12px}
+main{padding:20px 16px 112px}.view{display:none}.view.active{display:block}
+h1{font-size:27px;font-weight:800;letter-spacing:-.025em;margin:4px 0 4px}
+h2{font-size:17px;font-weight:750;letter-spacing:-.01em;margin:26px 0 12px}
+h3{font-size:15px;margin:18px 0 10px}
+p{margin:0}.muted{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{background:var(--card);border:1px solid rgba(227,232,241,.9);border-radius:var(--r-card);padding:17px;box-shadow:var(--shadow)}
+.metric-card{position:relative;padding:15px 15px 14px}
+.mi{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:10px;background:var(--primary-soft)}
+.mi.y{background:#fff4d1}.mi.g{background:#e3f6ec}.mi.o{background:#ffeccc}
+.metric{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.metric-label{color:var(--muted);font-size:13px;margin-top:5px;font-weight:600}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.primary{background:var(--primary);color:#fff;border-radius:var(--r-btn);padding:13px 18px;min-height:46px;font-weight:700;box-shadow:0 8px 18px -8px rgba(36,89,232,.65);transition:transform .12s,box-shadow .12s}
+.primary:active{transform:scale(.97);box-shadow:0 3px 8px -4px rgba(36,89,232,.6)}
+.secondary{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:var(--r-btn);padding:12px 16px;min-height:46px;font-weight:650;box-shadow:var(--shadow-sm);display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:transform .12s}
+.secondary:active{transform:scale(.97);background:#f6f8fc}
+.danger{color:var(--danger)}
+.list{display:flex;flex-direction:column;gap:10px}
+.listitem{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid rgba(227,232,241,.9);border-radius:16px;padding:14px 15px;box-shadow:var(--shadow-sm);transition:background .12s}
+.listitem:active{background:#f6f8fc}
+button.listitem{width:100%;text-align:left;color:var(--ink);font-size:15px}
+button.listitem>span:not(.tag){color:var(--muted);font-size:12px;margin-left:auto}
+.listitem b{font-weight:700}
+.listitem>div{min-width:0}
+.listitem .muted{margin-top:2px;overflow-wrap:anywhere}
+.tag{flex:none;font-size:11.5px;border-radius:999px;padding:5px 10px;background:var(--primary-soft);color:var(--primary);font-weight:700;white-space:nowrap}
+.tag.ok{background:#e3f6ec;color:#0b7a46}.tag.warn{background:#fff1d6;color:#9a5b00}.tag.bad{background:#fde7e5;color:#b42318}.tag.mute{background:#eceff5;color:#4b5873}
+.search{width:100%;padding:13px 14px 13px 42px;border:1px solid var(--line);border-radius:var(--r-in);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%236b7690' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='m13 13 4 4'/%3E%3C/svg%3E") no-repeat 14px 50%;margin:12px 0;box-shadow:var(--shadow-sm)}
+.search:focus,.field input:focus,.field select:focus,.field textarea:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 4px rgba(36,89,232,.14)}
+.section{margin-top:16px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.field label{font-size:12.5px;font-weight:700;color:#3a4766}
+.field input,.field select,.field textarea{width:100%;padding:12px 13px;border:1px solid #d5dbe8;border-radius:var(--r-in);background:#fff;min-height:46px}
+.field .search{padding-left:42px;margin:0}
+.field textarea{min-height:92px;resize:vertical}
+.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:0 12px}.full{grid-column:1/-1}
+.tabs{display:flex;gap:8px;overflow:auto;margin:12px 0;padding-bottom:2px}
+.tab{white-space:nowrap;padding:9px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.tab.active{background:var(--dark);color:#fff;border-color:var(--dark)}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(1100px,100%);display:grid;grid-template-columns:repeat(6,1fr);background:rgba(255,255,255,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);border-radius:22px 22px 0 0;box-shadow:0 -10px 28px -14px rgba(20,32,58,.22);padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:6}
+.nav{background:none;color:var(--muted);font-size:11px;font-weight:600;padding:4px 2px}
+.nav span{display:flex;align-items:center;justify-content:center;width:52px;height:30px;margin:0 auto 3px;border-radius:999px;font-size:18px;transition:background .15s}
+.nav.active{color:var(--primary);font-weight:800}.nav.active span{background:var(--primary-soft)}
+.modal{position:fixed;inset:0;background:rgba(14,26,51,.45);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);display:none;align-items:flex-end;z-index:20}.modal.open{display:flex}
+.sheet{position:relative;background:var(--bg);width:100%;max-width:760px;margin:0 auto;max-height:92vh;overflow:auto;border-radius:26px 26px 0 0;padding:26px 18px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -12px 40px -12px rgba(14,26,51,.4);animation:sheetUp .22s ease-out}
+.sheet::before{content:"";position:absolute;top:9px;left:50%;width:40px;height:4px;margin-left:-20px;border-radius:4px;background:#cbd3e3}
+@keyframes sheetUp{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
+.sheethead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.close{background:#fff;border:1px solid var(--line);border-radius:50%;width:38px;height:38px;font-size:20px;line-height:1;color:var(--muted);box-shadow:var(--shadow-sm)}
+.toast{position:fixed;left:50%;bottom:98px;transform:translateX(-50%);background:var(--dark);color:#fff;padding:12px 18px;border-radius:999px;box-shadow:0 12px 28px -10px rgba(14,26,51,.6);display:none;z-index:30;font-size:13.5px;font-weight:600;max-width:90vw;text-align:center}
+.empty{padding:26px 18px;text-align:center;color:var(--muted);background:rgba(255,255,255,.6);border:1.5px dashed #cfd7e6;border-radius:16px}
+.suggest{position:relative}.suggestbox{position:absolute;left:0;right:0;top:100%;z-index:40;background:#fff;border:1px solid var(--line);border-radius:var(--r-in);box-shadow:0 12px 28px -10px rgba(20,32,58,.3);max-height:180px;overflow:auto}.suggestitem{padding:11px 13px;border-bottom:1px solid var(--line);cursor:pointer}.suggestitem:hover{background:#f2f5fb}
+.checklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px;padding:10px;border:1px solid #d5dbe8;border-radius:var(--r-in);background:#fff;max-height:240px;overflow:auto}
+.checkitem{display:flex;gap:9px;align-items:center;font-size:14px;padding:7px 8px;border-radius:10px}.checkitem:active{background:var(--primary-soft)}
+.checkitem input{width:18px;height:18px;accent-color:var(--primary)}
+.small{font-size:12px}
+.photo{height:90px;border:1.5px dashed #aab4c9;border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--muted);background:#fafbfe}
+@media(max-width:650px){.formgrid{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}main{padding:18px 12px 108px}.card{padding:15px}.sub{font-size:11.5px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.toast{display:none;align-items:center;gap:12px;justify-content:space-between;max-width:92vw}
+.toast span{min-width:0}
+.toast button{flex:none;background:#fff;color:var(--dark);border:0;border-radius:999px;padding:7px 13px;font-weight:800;font-size:13px}
+.h-sub{font-size:12px;font-weight:800;color:var(--muted);margin:12px 2px 0}
+button.card{width:100%;text-align:left;font:inherit;color:inherit;display:flex;align-items:flex-start;gap:12px}
+.alert{border-left:4px solid var(--warn)}
+.alert.bad{border-left-color:var(--danger)}
+.alert.info{border-left-color:var(--primary)}
+.alert .ai{font-size:20px;line-height:1.2}
+.btn-danger{background:var(--danger)!important;box-shadow:0 8px 18px -8px rgba(214,54,43,.6)!important}
+.secondary.danger{color:var(--danger)}
+.actions input{flex:1;min-width:0;padding:11px 12px;border:1px solid #d5dbe8;border-radius:12px;min-height:44px;background:#fff}
+.preview{position:fixed;inset:0;background:#fff;z-index:40;display:none;flex-direction:column}
+.preview.open{display:flex}
+.pvbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:calc(10px + env(safe-area-inset-top)) 12px 10px;border-bottom:1px solid var(--line);background:#fff}
+.pvbar .actions{gap:8px}.pvbar .primary,.pvbar .secondary{min-height:40px;padding:9px 13px}
+#pvFrame{flex:1;border:0;width:100%;background:#fff;min-height:60vh}
+.pmrow{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:6px}
+.pmrow>label{flex:1;display:flex;gap:9px;align-items:center;min-width:0;font-size:14px;cursor:pointer;margin:0}
+.pmrow input[type=checkbox]{width:18px;height:18px;accent-color:var(--primary);flex:none}
+.arrow{background:#eef2fa;color:var(--ink);border-radius:9px;width:36px;height:36px;font-size:15px;flex:none;padding:0}
+.arrow:disabled{opacity:.35}
+.pmsub{font-size:12px;color:var(--muted);margin:0 0 8px}
+.kv{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:6px 0 4px}
+.kv td,.kv th{padding:9px 12px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:top;text-align:left}
+.kv tr:last-child td,.kv tr:last-child th{border-bottom:0}
+.kv th{color:var(--muted);width:42%;font-weight:600;background:#f8fafd}
+.fv{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.fv .fl{font-size:12.5px;font-weight:700;color:#3a4766}
+.fv .fval{background:#fff;border:1px solid var(--line);border-radius:var(--r-in);padding:11px 13px;min-height:44px;overflow-wrap:anywhere}
+.warnbox{background:#fff4d1;border-radius:12px;padding:10px 12px;color:#7a4b00;font-size:13px;margin-top:10px}
+h3.full{grid-column:1/-1;font-size:14px;margin:16px 0 8px}
+.checkitem:hover{background:#f6f8fc}
+.field input[type=checkbox]{width:18px;height:18px;min-height:0;padding:0;margin:0;flex:none;accent-color:var(--primary);box-shadow:none}
+.checklist label,.checkitem{font-weight:500;color:var(--ink);font-size:14px;margin:0}
+.checklist{padding:8px}
+.checkitem{padding:8px 9px;border-radius:10px;display:flex;gap:9px;align-items:center}
+.tblwrap{overflow-x:auto;margin-top:6px}
+
+/* ---- v2.1 : mode sombre, rappels, langue ---- */
+.alert{display:flex;gap:10px;align-items:flex-start}
+.alertmain{flex:1;min-width:0;display:flex;gap:12px;align-items:flex-start;background:none;text-align:start;color:inherit;font:inherit;padding:0;border:0;cursor:pointer}
+.alertbtns{display:flex;flex-direction:column;gap:4px;flex:none}
+.arrow.small7{font-size:11px;width:36px}
+button.metric-card{display:block;text-align:start;border:1px solid rgba(227,232,241,.9);cursor:pointer}
+.nav em{display:block;font-style:normal;font-size:11px;font-weight:600}
+[dir=rtl] button.card,[dir=rtl] button.listitem,[dir=rtl] .alertmain{text-align:right}
+[dir=rtl] .field label{text-align:right}
+.dark{color-scheme:dark;--bg:#0b1220;--card:#162033;--ink:#e7ecf7;--muted:#8d9bb5;--line:#26334d;--primary-soft:#1d2d55;--dark:#050a14}
+.dark body{background:var(--bg);color:var(--ink)}
+.dark .app{background:var(--bg)}
+.dark .card,.dark .listitem,.dark button.listitem,.dark .secondary,.dark .tab,.dark .checklist,.dark .kv td,.dark .pmrow,.dark .close,.dark .empty,.dark .fv .fval,.dark .suggestbox{background-color:var(--card);color:var(--ink);border-color:var(--line)}
+.dark .secondary.danger{color:#ff9a92}
+.dark .kv th{background-color:#1d2a42;color:var(--muted)}
+.dark .kv{border-color:var(--line)}
+.dark .tab{color:var(--muted)}
+.dark .tab.active{background-color:#e7ecf7;color:#0b1220;border-color:#e7ecf7}
+.dark .field input,.dark .field select,.dark .field textarea,.dark .search,.dark .actions input{background-color:#101a2c;color:var(--ink);border-color:#2c3a57}
+.dark .field label,.dark .fv .fl{color:#b9c5dc}
+.dark .metric-label,.dark .muted,.dark .sub{color:var(--muted)}
+.dark h1,.dark h2,.dark h3{color:var(--ink)}
+.dark .checklist{background-color:#101a2c;border-color:#2c3a57}
+.dark .checkitem{color:var(--ink)}
+.dark .checkitem:hover,.dark .checkitem:active{background-color:#1d2a42}
+.dark .bottom{background-color:rgba(16,26,44,.96);border-color:var(--line)}
+.dark .nav{color:var(--muted)}
+.dark .nav.active{color:#8fb1ff}
+.dark .nav.active span{background-color:#1d2d55}
+.dark .modal{background:rgba(0,0,0,.6)}
+.dark .sheet{background:var(--bg)}
+.dark .sheet::before{background:#3a4866}
+.dark .preview,.dark .pvbar{background-color:var(--bg);border-color:var(--line)}
+.dark .toast{background-color:#e7ecf7;color:#0b1220}
+.dark .toast button{background-color:#0b1220;color:#e7ecf7}
+.dark .arrow{background-color:#1d2a42;color:var(--ink)}
+.dark .mi{background-color:#1d2d55}.dark .mi.y{background-color:#3a3117}.dark .mi.g{background-color:#12332a}.dark .mi.o{background-color:#3d2a12}
+.dark .tag{background-color:#1d2d55;color:#9ab8ff}
+.dark .tag.ok{background-color:#12332a;color:#6fe0ae}.dark .tag.warn{background-color:#3d2a12;color:#ffc66b}.dark .tag.bad{background-color:#3d1a1a;color:#ff9a92}.dark .tag.mute{background-color:#222c40;color:#aab6cc}
+.dark .warnbox{background-color:#3d2a12;color:#ffd58a}
+.dark .info,.dark .alert.info{border-color:var(--line)}
+.dark .empty{border-color:#33415e}
+.dark .sub{color:#9fb0cf}
+.dark pre{background-color:#101a2c;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="header-row"><div><div class="logo">⚡</div><div><div class="brand">GE Manager</div><div class="sub">SARL Very Fast · Gestion du parc électrogène · Hors ligne</div></div></div></div></header>
+<main>
+
+<section id="dashboard" class="view active">
+  <h1 data-i18n="dash_title">Tableau de bord</h1><p class="muted" data-i18n="dash_sub">Votre parc technique</p>
+  <div id="backupReminder"></div>
+  <div id="alerts" class="list section"></div>
+  <div class="grid section">
+    <button class="card metric-card" type="button" onclick="nav('sites')"><div class="mi">📍</div><div class="metric" id="mSites">0</div><div class="metric-label" data-i18n="m_sites">Sites</div></button>
+    <button class="card metric-card" type="button" onclick="goGroups('')"><div class="mi y">⚡</div><div class="metric" id="mGroups">0</div><div class="metric-label" data-i18n="m_groups">Groupes</div></button>
+    <button class="card metric-card" type="button" onclick="goGroups('En panne')"><div class="mi o">⛔</div><div class="metric" id="mDown">0</div><div class="metric-label" data-i18n="m_down">En panne</div></button>
+    <button class="card metric-card" type="button" onclick="nav('interventions')"><div class="mi g">🔧</div><div class="metric" id="mInterv">0</div><div class="metric-label" data-i18n="m_interv">Interventions</div></button>
+  </div>
+  <div class="card section">
+    <h2 style="margin-top:0" data-i18n="search_title">Recherche générale</h2>
+    <p class="muted small">N° moteur, N° châssis, N° alternateur, référence de filtre, contrôleur, marque, modèle, intervention…</p>
+    <input class="search" id="globalSearch" type="search" placeholder="Ex. N° moteur, Fleetguard, DSE…" oninput="renderGlobalSearch()" autocomplete="off">
+    <div id="globalSearchResults" class="list section"></div>
+  </div>
+  <div class="actions section">
+    <button class="primary" type="button" onclick="openGroupForm()" data-i18n="btn_new_group">＋ Nouveau groupe</button>
+    <button class="secondary" type="button" onclick="openSiteForm()" data-i18n="btn_new_site">＋ Nouveau site</button>
+    <button class="secondary" type="button" onclick="openIntervention()" data-i18n="btn_interv">＋ Intervention</button>
+    <button class="secondary" type="button" onclick="openPartForm()" data-i18n="btn_part">＋ Référence pièce</button>
+  </div>
+  <h2 data-i18n="recent">Groupes récents</h2><div id="recentGroups" class="list"></div>
+</section>
+
+<section id="sites" class="view">
+  <h1>Sites</h1><p class="muted">Établissements et installations, par wilaya</p>
+  <input class="search section" id="siteSearch" type="search" placeholder="Rechercher un site, une commune…" oninput="renderSites()" autocomplete="off">
+  <div id="siteList"></div>
+  <div class="actions section"><button class="primary" type="button" onclick="openSiteForm()" data-i18n="btn_new_site">＋ Nouveau site</button></div>
+</section>
+
+<section id="groups" class="view">
+  <h1>Groupes</h1><p class="muted">Recherche technique</p>
+  <div class="formgrid section">
+    <div class="field"><label>Recherche</label><input class="search" id="groupSearch" type="search" placeholder="Nom, moteur, série, filtre…" oninput="renderGroups()" autocomplete="off"></div>
+    <div class="field"><label>Trier par</label><select id="groupSort" onchange="renderGroups()"><option value="name">Nom du groupe</option><option value="site">Site</option><option value="state">État</option><option value="engine">Moteur</option><option value="brand">Marque</option><option value="next">Prochaine maintenance</option></select></div>
+  </div>
+  <div id="groupList" class="list section"></div>
+  <div class="actions section"><button class="primary" type="button" onclick="openGroupForm()" data-i18n="btn_new_group">＋ Nouveau groupe</button></div>
+</section>
+
+<section id="parts" class="view">
+  <h1>Base de pièces et filtres</h1><p class="muted">Références, types et équivalents</p>
+  <div class="formgrid section">
+    <div class="field"><label>Recherche</label><input class="search" id="partsSearch" type="search" placeholder="Référence, marque, compatibilité…" oninput="renderParts()" autocomplete="off"></div>
+    <div class="field"><label>Type</label><select id="partsTypeFilter" onchange="renderParts()"></select></div>
+  </div>
+  <div class="muted small section" id="partsCount"></div>
+  <div id="partsList" class="list section"></div>
+  <div class="actions section"><button class="primary" type="button" onclick="openPartForm()">＋ Ajouter une référence</button><button class="secondary" type="button" onclick="exportParts()">📊 Exporter</button></div>
+</section>
+
+<section id="interventions" class="view">
+  <h1>Interventions</h1><p class="muted">Historique des opérations</p>
+  <div class="formgrid section">
+    <div class="field"><label>Recherche</label><input class="search" id="intSearch" type="search" placeholder="Défaut, pièce, travaux…" oninput="renderInterventions()" autocomplete="off"></div>
+    <div class="field"><label>Groupe</label><select id="intGroupFilter" onchange="renderInterventions()"></select></div>
+    <div class="field"><label>Type</label><select id="intTypeFilter" onchange="renderInterventions()"></select></div>
+  </div>
+  <div class="actions section"><button class="primary" type="button" onclick="openIntervention()" data-i18n="btn_interv">＋ Intervention</button></div>
+  <div id="interventionList" class="list section"></div>
+</section>
+
+<section id="more" class="view">
+  <h1 data-i18n="nav_more">Plus</h1>
+  <div class="card section">
+    <h2 style="margin-top:0" data-i18n="settings_title">Paramètres</h2>
+    <div class="field"><label data-i18n="theme_label">Thème</label><select id="setTheme" onchange="saveAppearance()"><option value="light" data-i18n="th_light">Clair</option><option value="dark" data-i18n="th_dark">Sombre</option><option value="auto" data-i18n="th_auto">Automatique</option></select></div>
+    <div class="field"><label data-i18n="lang_label">Langue</label><select id="setLang" onchange="saveAppearance()"><option value="fr">Français</option><option value="en">English</option><option value="ar">العربية</option></select></div>
+  </div>
+  <div class="card section">
+    <h2 style="margin-top:0">État des données</h2>
+    <p><span class="tag ok" id="connectionState">Mode local</span> <span class="tag warn">Google Drive non connecté</span></p>
+    <div class="muted small section" id="lastSaveInfo"></div>
+  </div>
+  <div class="card section">
+    <h2 style="margin-top:0">Sauvegarde et emplacement</h2>
+    <div class="field"><label>Où enregistrer sauvegardes et exports</label><select id="setMode" onchange="backupModeHint()"><option value="ask">Demander à chaque fois (Partager, Drive, Fichiers…)</option><option value="app">Dossier Documents de l’appli</option></select></div>
+    <div class="field"><label>Nom du dossier (mode Documents)</label><input id="setFolder" value="GE Manager" oninput="backupModeHint()" autocomplete="off"></div>
+    <p class="muted small" id="setHint"></p>
+    <div class="actions section"><button class="secondary" type="button" onclick="saveBackupSettings()">Enregistrer ces réglages</button></div>
+    <div class="actions section"><button class="primary" type="button" onclick="backupNow()">💾 Créer une sauvegarde</button><label class="secondary">📂 Restaurer un fichier<input type="file" accept=".json,application/json" hidden onchange="importFile(event)"></label></div>
+    <p class="muted small section" id="backupInfo"></p>
+  </div>
+  <div class="card section">
+    <h2 style="margin-top:0" data-i18n="catalogue_title">Modèles moteurs et filtres</h2>
+    <p class="muted small">Chaque modèle moteur mémorise ses filtres. Les groupes de même modèle les reçoivent automatiquement.</p>
+    <div id="catalogueList" class="list section"></div>
+  </div>
+  <div class="list section">
+    <button class="listitem" type="button" onclick="openExport()">📊 <b>Exporter les données</b><span>Excel / CSV</span></button>
+    <button class="listitem" type="button" onclick="openPrint()">🖨️ <b>Imprimer / rapports</b><span>Contenu et ordre</span></button>
+  </div>
+  <p class="muted small section">GE Manager v2.0 · données stockées sur cet appareil.</p>
+</section>
+
+</main>
+<nav class="bottom">
+  <button class="nav active" data-view="dashboard"><span>⌂</span><em data-i18n="nav_home">Accueil</em></button>
+  <button class="nav" data-view="sites"><span>⌖</span><em data-i18n="nav_sites">Sites</em></button>
+  <button class="nav" data-view="groups"><span>⚙</span><em data-i18n="nav_groups">Groupes</em></button>
+  <button class="nav" data-view="parts"><span>🧰</span><em data-i18n="nav_parts">Pièces</em></button>
+  <button class="nav" data-view="interventions"><span>🔧</span><em data-i18n="nav_interv">Interventions</em></button>
+  <button class="nav" data-view="more"><span>⋯</span><em data-i18n="nav_more">Plus</em></button>
+</nav>
+</div>
+
+<div id="modal" class="modal"><div class="sheet"><div class="sheethead"><h2 id="modalTitle" style="margin:0">Formulaire</h2><button class="close" type="button" onclick="closeModal()" aria-label="Fermer">×</button></div><div id="modalBody"></div></div></div>
+<div id="preview" class="preview"><div class="pvbar"><button class="secondary" type="button" onclick="closePreview()">✕ Fermer</button><b id="pvTitle">Aperçu</b><div class="actions"><button class="secondary" type="button" onclick="previewShare()">Partager</button><button class="primary" type="button" onclick="previewPrint()">Imprimer</button></div></div><iframe id="pvFrame" title="Aperçu du rapport"></iframe></div>
+<div id="toast" class="toast"></div>
+<script>
+/* GE Manager v2.0 — noyau : données, utilitaires, recherche, tableau de bord, sites */
+const KEY='ge_manager_v1';                       // même clé que la v1 : les données existantes sont conservées
+const SETTINGS_KEY='ge_manager_settings_v2';
+const LAST_SAVE_KEY='ge_manager_last_save_v4';
+const CORRUPT_KEY='ge_manager_copie_illisible';
+const BEFORE_IMPORT_KEY='ge_manager_avant_restauration';
+const $=id=>document.getElementById(id);
+const uid=()=>{try{if(window.crypto&&crypto.randomUUID)return crypto.randomUUID()}catch(e){}return 'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,10)};
+const esc=s=>String(s===undefined||s===null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const norm=x=>String(x===undefined||x===null?'':x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const compact=x=>norm(x).replace(/[^a-z0-9]/g,'');
+const isNative=()=>!!(window.Capacitor&&typeof window.Capacitor.isNativePlatform==='function'&&window.Capacitor.isNativePlatform());
+const plugin=n=>(window.Capacitor&&window.Capacitor.Plugins)?window.Capacitor.Plugins[n]:undefined;
+const localISO=d=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+const todayISO=()=>localISO(new Date());
+const addDays=(iso,n)=>{const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return localISO(d)};
+const isISODate=s=>/^\d{4}-\d{2}-\d{2}$/.test(String(s||''))&&!isNaN(Date.parse(s+'T00:00:00'));
+const fmtDate=s=>isISODate(s)?new Date(s+'T12:00:00').toLocaleDateString('fr-FR'):(s?String(s):'—');
+const fmtDateTime=s=>{const d=new Date(s);return isNaN(d)?'—':d.toLocaleString('fr-FR')};
+const v=x=>(x===undefined||x===null||String(x).trim()==='')?'—':String(x);
+const stamp=()=>{const d=new Date();return localISO(d)+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')};
+const emptyBox=(t,s)=>`<div class="empty"><b>${esc(t)}</b>${s?`<div class="small">${esc(s)}</div>`:''}</div>`;
+
+const TYPES_REF=['Filtre à huile','Filtre à air','Filtre à gasoil','Filtre habitacle','Pièce moteur','Pièce alternateur','Autre pièce'];
+const INT_TYPES=['Diagnostic','Maintenance','Réparation','Installation','Contrôle','Autre'];
+const STATES=['En service','Arrêté','En panne','Maintenance'];
+const DEFAULT_PARTS=['Thermostat','Filtre à air','Filtre à huile','Filtre à gasoil','Courroie','Batterie','Démarreur','Alternateur','AVR','Contrôleur électronique','Capteur de température','Capteur de pression d’huile','Pompe à eau','Pompe d’alimentation gasoil','Injecteur','Durite','Radiateur','Ventilateur','Fusible','Relais','Contacteur','Câblage','Régulateur de tension'];
+// Les 58 wilayas officielles (les noms de communes de la v1 ont été retirés)
+const WILAYAS=['Adrar','Chlef','Laghouat','Oum El Bouaghi','Batna','Béjaïa','Biskra','Béchar','Blida','Bouira','Tamanrasset','Tébessa','Tlemcen','Tiaret','Tizi Ouzou','Alger','Djelfa','Jijel','Sétif','Saïda','Skikda','Sidi Bel Abbès','Annaba','Guelma','Constantine','Médéa','Mostaganem','M’Sila','Mascara','Ouargla','Oran','El Bayadh','Illizi','Bordj Bou Arréridj','Boumerdès','El Tarf','Tindouf','Tissemsilt','El Oued','Khenchela','Souk Ahras','Tipaza','Mila','Aïn Defla','Naâma','Aïn Témouchent','Ghardaïa','Relizane','Timimoun','Bordj Badji Mokhtar','Ouled Djellal','Béni Abbès','In Salah','In Guezzam','Touggourt','Djanet','El M’Ghair','El Meniaa'];
+
+/* ---------- Données ---------- */
+const emptyDb=()=>({sites:[],groups:[],interventions:[],parts:[],engineFilters:{}});
+const looksLikeBackup=x=>!!x&&typeof x==='object'&&!Array.isArray(x)&&Array.isArray(x.sites)&&Array.isArray(x.groups);
+function relinkParts(list){
+  // Les équivalences sont symétriques et transitives (A≈B et B≈C ⇒ A≈C), uniquement entre pièces du même type
+  const by=new Map(list.map(p=>[p.id,p]));
+  list.forEach(p=>{p.similarIds=(p.similarIds||[]).filter(id=>{const o=by.get(id);return o&&o!==p&&o.type===p.type})});
+  list.forEach(p=>p.similarIds.forEach(id=>{const o=by.get(id);if(o&&!o.similarIds.includes(p.id))o.similarIds.push(p.id)}));
+  list.forEach(p=>{
+    const seen=new Set([p.id]),st=[p.id];
+    while(st.length){const cur=by.get(st.pop());(cur.similarIds||[]).forEach(x=>{if(!seen.has(x)&&by.get(x)){seen.add(x);st.push(x)}})}
+    p.similarIds=[...seen].filter(x=>x!==p.id);
+  });
+}
+function normalizeDb(x){
+  if(!looksLikeBackup(x))throw new Error('format');
+  const arr=a=>Array.isArray(a)?a:[];
+  const seen=new Set();
+  const fixId=o=>{if(!o.id||seen.has(o.id))o.id=uid();seen.add(o.id);return o};
+  const d={
+    sites:arr(x.sites).filter(s=>s&&typeof s==='object').map(s=>fixId({...s,name:String(s.name||'Site sans nom')})),
+    groups:arr(x.groups).filter(g=>g&&typeof g==='object').map(g=>fixId({...g})),
+    interventions:arr(x.interventions).filter(i=>i&&typeof i==='object').map(i=>fixId({...i,type:INT_TYPES.includes(i.type)?i.type:'Autre',damaged:arr(i.damaged).map(String),repaired:arr(i.repaired).map(String)})),
+    parts:[],
+    engineFilters:(x.engineFilters&&typeof x.engineFilters==='object'&&!Array.isArray(x.engineFilters))?x.engineFilters:{}
+  };
+  d.parts=arr(x.parts).map(p=>typeof p==='string'?{name:p}:p)
+    .filter(p=>p&&typeof p==='object'&&String(p.name||'').trim())
+    .map(p=>fixId({id:p.id,name:String(p.name).trim(),type:TYPES_REF.includes(p.type)?p.type:'Autre pièce',brand:p.brand||'',notes:p.notes||'',similarIds:arr(p.similarIds),created:p.created||''}));
+  relinkParts(d.parts);
+  return d;
+}
+let loadError='';
+function loadDb(){
+  let raw=null;
+  try{raw=localStorage.getItem(KEY)}catch(e){}
+  if(!raw)return emptyDb();
+  try{return normalizeDb(JSON.parse(raw))}
+  catch(e){
+    loadError='Les données enregistrées étaient illisibles. Une copie a été gardée sur l’appareil.';
+    try{localStorage.setItem(CORRUPT_KEY,raw)}catch(_){}
+    return emptyDb();
+  }
+}
+let db=loadDb();
+let lastWritten=null;
+function save(){
+  try{
+    const s=JSON.stringify(db);
+    localStorage.setItem(KEY,s);lastWritten=s;
+    localStorage.setItem(LAST_SAVE_KEY,new Date().toISOString());
+    updateStorageStatus();return true;
+  }catch(e){
+    toast('Enregistrement impossible (stockage plein ou bloqué). Exportez une sauvegarde.');return false;
+  }
+}
+let settings=loadSettings();
+function loadSettings(){
+  let s={};try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}')||{}}catch(e){}
+  return {backupMode:'ask',backupFolder:'GE Manager',lastBackupAt:null,printPrefs:null,intOrder:'desc',theme:'light',lang:'fr',snoozes:{},...s};
+}
+function saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings))}catch(e){}}
+window.addEventListener('storage',e=>{
+  // Deux onglets ouverts : on recharge au lieu d’écraser les données de l’autre
+  if(e.key!==KEY||e.newValue===lastWritten)return;
+  try{db=normalizeDb(JSON.parse(e.newValue||'null'));renderAll();toast('Données mises à jour depuis un autre onglet')}catch(_){}
+});
+
+/* ---------- Interface commune ---------- */
+let toastTimer=null;
+function toast(msg,action){
+  const t=$('toast');t.innerHTML='';
+  const s=document.createElement('span');s.textContent=msg;t.appendChild(s);
+  if(action){const b=document.createElement('button');b.type='button';b.textContent=action.label;b.onclick=()=>{t.style.display='none';action.run()};t.appendChild(b)}
+  t.style.display='flex';clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{t.style.display='none'},action?6000:2800);
+}
+function modal(title,body){
+  $('modalTitle').textContent=title;$('modalBody').innerHTML=body;
+  $('modal').classList.add('open');
+  const sh=document.querySelector('#modal .sheet');if(sh)sh.scrollTop=0;
+}
+function closeModal(){$('modal').classList.remove('open')}
+let confirmFn=null;
+function confirmBox(title,html,label,fn,danger=true,back=''){
+  confirmFn=fn;
+  modal(title,`<div class="card">${html}</div><div class="actions section"><button class="secondary" type="button" onclick="${back||'closeModal()'}">Annuler</button><button class="primary${danger?' btn-danger':''}" type="button" onclick="runConfirm()">${esc(label)}</button></div>`);
+}
+function runConfirm(){const f=confirmFn;confirmFn=null;if(f)f()}
+function withUndo(msg,mutate){
+  const before=JSON.stringify(db);
+  mutate();
+  if(!save())return;
+  toast(msg,{label:'Annuler',run:()=>{try{db=normalizeDb(JSON.parse(before));save();renderAll();toast('Suppression annulée')}catch(e){toast('Annulation impossible')}}});
+}
+let activeView='dashboard';
+function nav(id){
+  activeView=id;
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===id));
+  document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.view===id));
+  renderAll();window.scrollTo(0,0);
+}
+function renderAll(){
+  [renderDashboard,renderRecent,renderGlobalSearch,renderSites,renderGroups,renderParts,renderInterventions,renderSettingsCard,renderCatalogue,updateStorageStatus].forEach(fn=>{
+    try{fn()}catch(e){console.error(e);toast('Erreur d’affichage : '+((e&&e.message)||e))}
+  });
+}
+function updateStorageStatus(){
+  const c=$('connectionState');
+  if(c){c.textContent=navigator.onLine?'En ligne · données sur cet appareil':'Hors ligne · données sur cet appareil';c.className='tag '+(navigator.onLine?'ok':'warn')}
+  const l=$('lastSaveInfo');
+  if(l){
+    const t=localStorage.getItem(LAST_SAVE_KEY);
+    l.textContent=(t?'Dernière modification : '+fmtDateTime(t):'Aucune modification enregistrée pour l’instant.')+(settings.lastBackupAt?' · Dernière sauvegarde : '+fmtDateTime(settings.lastBackupAt):' · Aucune sauvegarde faite');
+  }
+}
+
+/* ---------- Noms, champs, recherche ---------- */
+const siteOf=g=>db.sites.find(s=>s.id===g.site)||{};
+const siteName=id=>{const s=db.sites.find(x=>x.id===id);return (s&&s.name)||'Site inconnu'};
+const groupById=id=>db.groups.find(g=>g.id===id);
+const groupModel=g=>[g.brand,g.model].filter(Boolean).join(' ');
+const groupName=g=>g.code?(groupModel(g)?`${g.code} — ${groupModel(g)}`:g.code):(groupModel(g)||'Groupe sans marque');
+const stateCls=s=>({'En service':'ok','En panne':'bad','Maintenance':'warn','Arrêté':'mute'})[s]||'';
+const intSort=(a,b)=>(String(b.date||'')).localeCompare(String(a.date||''))||String(b.created||'').localeCompare(String(a.created||''));
+const GROUP_TEXT_KEYS=['code','brand','model','chassis','kva','kw','voltage','freq','phases','hours','engine_brand','engine_model','engine_sn','alt_brand','alt_model','alt_sn','ctrl_brand','ctrl_model','avr_brand','avr_model','air_filter','oil_filter','fuel_filter','notes','state'];
+function groupFields(g){const s=siteOf(g);return [...GROUP_TEXT_KEYS.map(k=>g[k]),s.name,s.wilaya,s.commune,s.code,s.address,groupName(g)].filter(x=>x!=null&&x!=='').map(String)}
+function interventionFields(i){const g=groupById(i.group);return [i.date,i.type,i.fault,i.work,i.notes,i.state_after,...(i.damaged||[]),...(i.repaired||[]),g?groupName(g):'',g?siteName(g.site):''].filter(x=>x!=null&&x!=='').map(String)}
+// Recherche tolérante : accents, espaces, tirets et ponctuation ignorés (« LF 3000 » = « LF-3000 »)
+function matches(fields,raw){
+  const terms=norm(raw).split(/\s+/).map(compact).filter(Boolean);
+  if(!terms.length)return true;
+  const cs=fields.map(compact);
+  return terms.every(t=>cs.some(c=>c.includes(t)));
+}
+const HIT_LABELS=[['code','Nom du groupe'],['engine_sn','N° moteur'],['chassis','N° châssis'],['alt_sn','N° alternateur'],['air_filter','Filtre à air'],['oil_filter','Filtre à huile'],['fuel_filter','Filtre à gasoil'],['ctrl_model','Contrôleur'],['avr_model','AVR']];
+function groupHitLabel(g,raw){const hits=HIT_LABELS.filter(([k])=>g[k]&&matches([String(g[k])],raw)).map(([k,l])=>`${l} : ${g[k]}`);return hits.join(' · ')||'Correspond aux données du groupe'}
+
+/* ---------- Tableau de bord ---------- */
+function backupDue(){
+  if(isSnoozed('backup'))return false;
+  const hasData=db.sites.length||db.groups.length||db.interventions.length;
+  if(!hasData)return false;
+  if(!settings.lastBackupAt)return true;
+  return Date.now()-Date.parse(settings.lastBackupAt)>7*864e5;
+}
+const alertBox=(key,cls,icon,title,sub,act)=>`<div class="card alert ${cls}"><button class="alertmain" type="button" onclick="${act}"><span class="ai">${icon}</span><div style="min-width:0"><b>${title}</b><div class="muted small">${sub}</div></div></button><div class="alertbtns"><button class="arrow" type="button" title="${esc(tr('hide_today'))}" onclick="snooze('${key}',endOfDay())">✕</button><button class="arrow small7" type="button" title="${esc(tr('hide_week'))}" onclick="snooze('${key}',plusDays(7))">7j</button></div></div>`;
+function renderDashboard(){
+  $('mSites').textContent=db.sites.length;
+  $('mGroups').textContent=db.groups.length;
+  $('mDown').textContent=db.groups.filter(g=>g.state==='En panne').length;
+  $('mInterv').textContent=db.interventions.length;
+  $('backupReminder').innerHTML=backupDue()?`<div class="card alert info section"><span class="ai">💾</span><div style="min-width:0;flex:1"><b>${esc(tr('backup_title'))}</b><div class="muted small">${esc(settings.lastBackupAt?'Dernière sauvegarde : '+fmtDateTime(settings.lastBackupAt):'Aucune sauvegarde faite sur cet appareil.')}</div><div class="actions section"><button class="primary" type="button" onclick="backupNow()">${esc(tr('backup_now'))}</button><button class="secondary" type="button" onclick="snooze('backup',endOfDay())">${esc(tr('hide_today'))}</button><button class="secondary" type="button" onclick="snooze('backup',plusDays(7))">${esc(tr('hide_week'))}</button></div></div></div>`:'';
+  const today=todayISO(),soon=addDays(today,30),items=[];
+  db.groups.filter(g=>g.state==='En panne').forEach(g=>{
+    const k='down:'+g.id;
+    if(!isSnoozed(k))items.push(alertBox(k,'bad','⛔',esc(groupName(g))+' est en panne',esc(siteName(g.site)),`showGroup('${g.id}')`));
+  });
+  db.groups.filter(g=>isISODate(g.next_maint)&&g.next_maint<=soon).sort((a,b)=>a.next_maint.localeCompare(b.next_maint)).forEach(g=>{
+    const k='maint:'+g.id+':'+g.next_maint;
+    if(isSnoozed(k))return;
+    const late=g.next_maint<today;
+    items.push(alertBox(k,late?'bad':'','🛠️',esc(groupName(g))+(late?' — maintenance en retard':' — maintenance à prévoir'),esc(siteName(g.site))+' · '+esc(fmtDate(g.next_maint)),`showGroup('${g.id}')`));
+  });
+  $('alerts').innerHTML=items.slice(0,6).join('');
+}
+function renderRecent(){
+  const a=db.groups.slice(-5).reverse();
+  $('recentGroups').innerHTML=a.length?a.map(groupItem).join(''):emptyBox('Aucun groupe enregistré.','Commencez par « ＋ Nouveau groupe ».');
+}
+function renderGlobalSearch(){
+  const el=$('globalSearchResults');if(!el)return;
+  const raw=$('globalSearch')?$('globalSearch').value:'';
+  if(!norm(raw)){el.innerHTML='<div class="muted small">Tapez un N° moteur, un N° châssis, une référence de filtre, une marque ou un mot de l’intervention.</div>';return}
+  const gs=db.groups.filter(g=>matches(groupFields(g),raw));
+  const ps=db.parts.filter(p=>matches(partFields(p),raw));
+  const is=db.interventions.filter(i=>matches(interventionFields(i),raw)).sort(intSort);
+  const extra=[];
+  ps.forEach(p=>groupsUsingPart(p).forEach(g=>{if(!gs.includes(g)&&!extra.includes(g))extra.push(g)}));
+  const allG=[...gs,...extra];
+  let h='';
+  if(allG.length)h+=`<div class="h-sub">Groupes (${allG.length})</div>`+allG.map(g=>{
+    const reason=gs.includes(g)?groupHitLabel(g,raw):'Utilise une référence trouvée';
+    return `<button class="listitem" type="button" onclick="showGroup('${g.id}')"><div style="min-width:0;flex:1"><b>${esc(groupName(g))}</b><div class="muted">${esc(siteName(g.site))} · ${esc([g.engine_brand,g.engine_model].filter(Boolean).join(' ')||'Moteur non renseigné')}</div><div class="muted small">${esc(reason)}</div></div><span class="tag ${stateCls(g.state)}">${esc(g.state||'—')}</span></button>`;
+  }).join('');
+  if(ps.length)h+=`<div class="h-sub">Références (${ps.length})</div>`+ps.map(p=>{
+    const eq=similarOf(p);
+    return `<button class="listitem" type="button" onclick="openPartForm('${p.id}')"><div style="min-width:0;flex:1"><b>${esc(p.name)}</b><div class="muted">${esc(p.type)}${p.brand?' · '+esc(p.brand):''}</div>${eq.length?`<div class="muted small">Équivalents : ${eq.map(x=>esc(x.name)).join(' · ')}</div>`:''}</div><span class="tag">Base pièces</span></button>`;
+  }).join('');
+  if(is.length)h+=`<div class="h-sub">Interventions (${is.length})</div>`+is.slice(0,20).map(i=>{
+    const g=groupById(i.group);
+    return `<button class="listitem" type="button" onclick="openIntervention('','${i.id}')"><div style="min-width:0;flex:1"><b>${esc(fmtDate(i.date))} — ${esc(i.type)}</b><div class="muted">${esc(g?groupName(g):'Groupe supprimé')}</div>${i.fault?`<div class="muted small">${esc(i.fault)}</div>`:''}</div><span class="tag">Intervention</span></button>`;
+  }).join('');
+  el.innerHTML=h||`<div class="empty"><b>Aucun résultat</b><div class="small">pour « ${esc(raw)} »</div></div>`;
+}
+
+/* ---------- Sites ---------- */
+const groupsOfSite=id=>db.groups.filter(g=>g.site===id);
+function wilayaOptions(sel=''){
+  const known=WILAYAS.includes(sel);
+  return '<option value="">— Choisir une wilaya —</option>'+(sel&&!known?`<option value="${esc(sel)}" selected>${esc(sel)}</option>`:'')+
+    WILAYAS.map((w,i)=>`<option value="${esc(w)}" ${w===sel?'selected':''}>${i<48?String(i+1).padStart(2,'0')+' — ':''}${esc(w)}</option>`).join('');
+}
+function renderSites(){
+  const box=$('siteList');if(!box)return;
+  const q=$('siteSearch')?$('siteSearch').value:'';
+  const list=db.sites.filter(s=>matches([s.name,s.wilaya,s.commune,s.address,s.code].filter(Boolean).map(String),q));
+  const byW={};
+  list.forEach(s=>{const k=s.wilaya||'Wilaya non renseignée';(byW[k]=byW[k]||[]).push(s)});
+  const ws=Object.keys(byW).sort((a,b)=>a.localeCompare(b,'fr'));
+  box.innerHTML=ws.length?ws.map(w=>{
+    const ss=byW[w].sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+    const n=ss.reduce((t,s)=>t+groupsOfSite(s.id).length,0);
+    return `<div class="card section"><div class="sheethead" style="margin:0"><h2 style="margin:0">${esc(w)}</h2><span class="tag mute">${ss.length} site(s) · ${n} groupe(s)</span></div><div class="list section">${ss.map(s=>`<button class="listitem" type="button" onclick="showSite('${s.id}')"><div style="min-width:0;flex:1"><b>${esc(s.name)}</b><div class="muted">${esc(s.commune||'Commune non renseignée')}${s.address?' · '+esc(s.address):''}</div></div><span class="tag">${groupsOfSite(s.id).length} groupe(s)</span></button>`).join('')}</div></div>`;
+  }).join(''):emptyBox(db.sites.length?'Aucun site ne correspond.':'Aucun site.',db.sites.length?'Modifiez la recherche.':'Créez votre premier site avec « ＋ Nouveau site ».');
+}
+function openSiteForm(id=''){
+  const s=id?db.sites.find(x=>x.id===id):null;
+  if(id&&!s){toast('Site introuvable');return}
+  const d=s||{};
+  modal(s?'Modifier le site':'Nouveau site',`<form onsubmit="saveSite(event,'${id}')">
+    <div class="formgrid">
+      <div class="field"><label>Nom du site *</label><input id="s_name" required value="${esc(d.name)}"></div>
+      <div class="field"><label>Wilaya *</label><select id="s_wilaya" required>${wilayaOptions(d.wilaya||'')}</select></div>
+      <div class="field"><label>Commune</label><input id="s_commune" value="${esc(d.commune)}"></div>
+      <div class="field"><label>Code site</label><input id="s_code" value="${esc(d.code)}"></div>
+      <div class="field full"><label>Adresse / emplacement</label><input id="s_address" value="${esc(d.address)}"></div>
+      <div class="field full"><label>Observations</label><textarea id="s_notes">${esc(d.notes)}</textarea></div>
+    </div>
+    <div class="actions"><button class="primary" type="submit">${s?'Enregistrer':'Créer le site'}</button><button class="secondary" type="button" onclick="${s?`showSite('${id}')`:'closeModal()'}">Annuler</button></div>
+  </form>`);
+}
+function saveSite(e,id){
+  e.preventDefault();
+  const f={name:$('s_name').value.trim(),wilaya:$('s_wilaya').value,commune:$('s_commune').value.trim(),code:$('s_code').value.trim(),address:$('s_address').value.trim(),notes:$('s_notes').value.trim()};
+  if(!f.name){toast('Donnez un nom au site.');return}
+  if(!f.wilaya){toast('Choisissez la wilaya.');return}
+  if(id){const s=db.sites.find(x=>x.id===id);if(!s){toast('Site introuvable');return}Object.assign(s,f)}
+  else db.sites.push({id:uid(),created:new Date().toISOString(),...f});
+  if(!save())return;
+  closeModal();toast(id?'Site modifié':'Site enregistré');
+  if(id)showSite(id);else nav('sites');
+}
+function showSite(id){
+  const s=db.sites.find(x=>x.id===id);if(!s)return;
+  const gs=groupsOfSite(id);
+  modal(s.name,`<p class="muted">${esc([s.commune,s.wilaya,s.address].filter(Boolean).join(' · ')||'Adresse non renseignée')}</p>
+    ${s.code?`<p class="muted small">Code : ${esc(s.code)}</p>`:''}
+    ${s.notes?`<div class="card section">${esc(s.notes)}</div>`:''}
+    <h2>Groupes (${gs.length})</h2><div class="list">${gs.length?gs.map(groupItem).join(''):emptyBox('Aucun groupe sur ce site.','')}</div>
+    <div class="actions section"><button class="primary" type="button" onclick="openSiteForm('${id}')">✏️ Modifier</button><button class="secondary danger" type="button" onclick="confirmDeleteSite('${id}')">🗑️ Supprimer le site</button></div>`);
+}
+function confirmDeleteSite(id){
+  const s=db.sites.find(x=>x.id===id);if(!s)return;
+  const gs=groupsOfSite(id),gids=gs.map(g=>g.id);
+  const n=db.interventions.filter(i=>gids.includes(i.group)).length;
+  confirmBox('Supprimer le site ?',`<b>${esc(s.name)}</b><p class="muted section">Ce site contient ${gs.length} groupe(s) et ${n} intervention(s). Ils seront supprimés aussi. Vous pourrez annuler pendant quelques secondes.</p>`,'Supprimer',()=>{
+    withUndo('Site supprimé',()=>{db.sites=db.sites.filter(x=>x.id!==id);db.groups=db.groups.filter(g=>g.site!==id);db.interventions=db.interventions.filter(i=>!gids.includes(i.group))});
+    closeModal();nav('sites');
+  },true,`showSite('${id}')`);
+}
+
+/* GE Manager v2.0 — groupes, fiches, interventions, base de pièces */
+const GROUP_KEYS=['code','state','brand','model','chassis','kva','kw','voltage','freq','phases','hours','next_maint','engine_brand','engine_model','engine_sn','alt_brand','alt_model','alt_sn','ctrl_brand','ctrl_model','avr_brand','avr_model','air_filter','oil_filter','fuel_filter','filter_qty','notes'];
+const NUM_KEYS=['kva','kw','voltage','hours','filter_qty'];
+const NUM_LABEL={kva:'puissance kVA',kw:'puissance kW',voltage:'tension',hours:'heures de marche',filter_qty:'quantité de filtres'};
+const FICHE_TABS=[['identification','Identification'],['engine','Moteur'],['alternator','Alternateur'],['controller','Contrôleur'],['filters','Filtres'],['history','Historique']];
+
+function groupItem(g){
+  return `<button class="listitem" type="button" onclick="showGroup('${g.id}')"><div style="min-width:0;flex:1"><b>${esc(groupName(g))}</b><div class="muted">${esc(siteName(g.site))}${g.kva?' · '+esc(g.kva)+' kVA':''}</div><div class="muted small">Moteur : ${esc([g.engine_brand,g.engine_model].filter(Boolean).join(' ')||'—')} · N° ${esc(g.engine_sn||'—')}</div></div><span class="tag ${stateCls(g.state)}">${esc(g.state||'—')}</span></button>`;
+}
+function renderGroups(){
+  const box=$('groupList');if(!box)return;
+  const q=$('groupSearch').value,sort=$('groupSort').value;
+  const keys={name:groupName,site:g=>siteName(g.site),state:g=>g.state||'',engine:g=>[g.engine_brand,g.engine_model].filter(Boolean).join(' '),brand:g=>g.brand||'',next:g=>g.next_maint||'9999-12-31'};
+  const list=db.groups.filter(g=>matches(groupFields(g),q)).sort((a,b)=>String(keys[sort](a)).localeCompare(String(keys[sort](b)),'fr',{numeric:true,sensitivity:'base'}));
+  box.innerHTML=list.length?list.map(groupItem).join(''):emptyBox(db.groups.length?'Aucun groupe ne correspond.':'Aucun groupe.',db.groups.length?'Modifiez la recherche.':'Ajoutez le premier groupe avec « ＋ Nouveau groupe ».');
+}
+
+/* ---------- Formulaire groupe (un seul formulaire pour ajout et modification) ---------- */
+function dl(key){
+  const vals=key==='part'?db.parts.map(p=>p.name):db.groups.map(g=>g[key]);
+  const u=[...new Set(vals.map(x=>String(x||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr')).slice(0,400);
+  return `<datalist id="dl_${key}">${u.map(x=>`<option value="${esc(x)}"></option>`).join('')}</datalist>`;
+}
+function siteOptions(w,sel){
+  const list=db.sites.filter(s=>!w||(s.wilaya||'')===w).sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+  const pick=sel||(list.length===1?list[0].id:'');   // un seul site dans la wilaya : on le choisit tout de suite
+  return '<option value="">— Choisir un site —</option>'+list.map(s=>`<option value="${s.id}" ${s.id===pick?'selected':''}>${esc(s.name)}${s.commune?' — '+esc(s.commune):''}</option>`).join('');
+}
+function fillGroupSites(w){const el=$('f_site');if(el)el.innerHTML=siteOptions(w,'')}
+function groupForm(id){
+  const g=id?groupById(id):null;
+  const d=g||{state:'En service',freq:'50',phases:'3',filter_qty:'1'};
+  const curW=g?(siteOf(g).wilaya||''):'';
+  const wilayas=[...new Set(db.sites.map(s=>s.wilaya||'').filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'));
+  const inp=(k,label,o={})=>`<div class="field${o.full?' full':''}"><label>${label}${o.req?' *':''}</label><input id="f_${k}" value="${esc(d[k])}"${o.list?` list="dl_${o.list}"`:''}${o.on?` oninput="${o.on}"`:''}${o.dec?' inputmode="decimal"':''}${o.date?' type="date"':''}${o.ph?` placeholder="${esc(o.ph)}"`:''}></div>`;
+  return `<form onsubmit="saveGroupForm(event,'${id||''}')">
+    <div class="formgrid">
+      <div class="field full"><div class="actions"><label class="secondary">📷 Photographier la plaque<input type="file" accept="image/*" capture="environment" hidden onchange="scanPlate(event)"></label></div><div id="plateStatus" class="muted small"></div><details id="plateDetails" hidden><summary class="small">Voir le texte lu</summary><pre id="plateRaw" class="small" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details></div>
+      <div class="field full"><label>Nom du groupe (code) — conseillé</label><input id="f_code" value="${esc(d.code)}" placeholder="Ex. GE-02 Bureau, Secours 1"></div>
+      <div class="field"><label>Wilaya *</label><select id="f_wilaya" onchange="fillGroupSites(this.value)"><option value="">— Toutes les wilayas —</option>${wilayas.map(w=>`<option ${w===curW?'selected':''}>${esc(w)}</option>`).join('')}</select></div>
+      <div class="field"><label>Site *</label><select id="f_site" required>${siteOptions(curW,g?g.site:'')}</select></div>
+      <div class="field"><label>État *</label><select id="f_state" required>${STATES.map(s=>`<option ${s===d.state?'selected':''}>${s}</option>`).join('')}</select></div>
+      ${inp('brand','Marque',{list:'brand'})}${inp('model','Modèle',{list:'model'})}
+      ${inp('chassis','N° châssis / série')}
+      ${inp('kva','Puissance (kVA)',{dec:true})}${inp('kw','Puissance (kW)',{dec:true})}
+      ${inp('voltage','Tension (V)',{dec:true})}
+      <div class="field"><label>Fréquence (Hz)</label><select id="f_freq"><option value="50" ${String(d.freq)==='50'?'selected':''}>50</option><option value="60" ${String(d.freq)==='60'?'selected':''}>60</option></select></div>
+      <div class="field"><label>Phases</label><select id="f_phases"><option value="3" ${String(d.phases)==='3'?'selected':''}>Triphasé (3)</option><option value="1" ${String(d.phases)==='1'?'selected':''}>Monophasé (1)</option></select></div>
+      ${inp('hours','Heures de marche',{dec:true})}
+      ${inp('next_maint','Prochaine maintenance',{date:true})}
+      <h3 class="full">Moteur</h3>
+      ${inp('engine_brand','Marque',{list:'engine_brand',on:'applyEngineFilters()'})}${inp('engine_model','Modèle',{list:'engine_model',on:'applyEngineFilters()'})}
+      ${inp('engine_sn','N° moteur')}
+      <h3 class="full">Alternateur</h3>
+      ${inp('alt_brand','Marque',{list:'alt_brand'})}${inp('alt_model','Modèle',{list:'alt_model'})}
+      ${inp('alt_sn','N° alternateur')}
+      <h3 class="full">Contrôleur et AVR</h3>
+      ${inp('ctrl_brand','Contrôleur — marque',{list:'ctrl_brand'})}${inp('ctrl_model','Contrôleur — modèle',{list:'ctrl_model'})}
+      ${inp('avr_brand','AVR — marque',{list:'avr_brand'})}${inp('avr_model','AVR — modèle',{list:'avr_model'})}
+      <div class="field full"><div id="f_engine_hint" class="muted small"></div><div class="actions"><button class="secondary" type="button" onclick="applyEngineFilters(true)">Remplir selon le modèle</button><button class="secondary" type="button" onclick="clearEngineFilters()">Effacer les filtres</button></div></div>
+      <h3 class="full">Filtres</h3>
+      ${inp('air_filter','Filtre à air',{list:'part'})}${inp('oil_filter','Filtre à huile',{list:'part'})}
+      ${inp('fuel_filter','Filtre à gasoil',{list:'part'})}${inp('filter_qty','Quantité de filtres',{dec:true})}
+      <div class="field full"><label>Observations</label><textarea id="f_notes">${esc(d.notes)}</textarea></div>
+    </div>
+    ${dl('brand')}${dl('model')}${dl('engine_brand')}${dl('engine_model')}${dl('alt_brand')}${dl('alt_model')}${dl('ctrl_brand')}${dl('ctrl_model')}${dl('avr_brand')}${dl('avr_model')}${dl('part')}
+    <div class="actions"><button class="primary" type="submit">${id?'Enregistrer les modifications':'Enregistrer le groupe'}</button><button class="secondary" type="button" onclick="${id?`showGroup('${id}')`:'closeModal()'}">Annuler</button></div>
+  </form>`;
+}
+function openGroupForm(id=''){
+  if(id&&!groupById(id)){toast('Groupe introuvable');return}
+  if(!id&&!db.sites.length){toast('Créez d’abord un site');openSiteForm();return}
+  modal(id?'Modifier le groupe':'Nouveau groupe',groupForm(id));
+}
+function readGroupForm(){
+  const o={site:$('f_site').value};
+  GROUP_KEYS.forEach(k=>{const el=$('f_'+k);o[k]=el?String(el.value||'').trim():''});
+  return o;
+}
+function validateGroup(o){
+  if(!o.site)return 'Choisissez le site du groupe.';
+  if(!STATES.includes(o.state))return 'Choisissez l’état du groupe.';
+  for(const k of NUM_KEYS){if(o[k]&&!/^\d+(?:[.,]\d+)?$/.test(o[k]))return `Valeur incorrecte : ${NUM_LABEL[k]}.`}
+  const num=k=>parseFloat(String(o[k]).replace(',','.'));
+  if(o.kva&&o.kw&&num('kw')>num('kva'))return 'La puissance active (kW) ne peut pas dépasser la puissance apparente (kVA).';
+  if(o.next_maint&&!isISODate(o.next_maint))return 'Date de prochaine maintenance invalide.';
+  return '';
+}
+function duplicatesOf(o,id){
+  const out=[];
+  const check=(key,label)=>{
+    const val=compact(o[key]);if(!val)return;
+    db.groups.forEach(g=>{if(g.id!==id&&compact(g[key])===val)out.push(`${label} « ${o[key]} » est déjà utilisé par « ${groupName(g)} » (${siteName(g.site)}).`)});
+  };
+  check('engine_sn','N° moteur');check('chassis','N° châssis / série');
+  return out;
+}
+function saveGroupForm(e,id){
+  e.preventDefault();
+  const o=readGroupForm();
+  const err=validateGroup(o);if(err){toast(err);return}
+  NUM_KEYS.forEach(k=>{o[k]=o[k].replace(',','.')});
+  const dups=duplicatesOf(o,id);
+  if(dups.length){
+    confirmBox('Numéro déjà utilisé',dups.map(x=>`<p>${esc(x)}</p>`).join('')+'<p class="muted section">Vérifiez la saisie. Enregistrez quand même seulement s’il s’agit d’un autre groupe.</p>','Enregistrer quand même',()=>commitGroup(o,id),false,id?`showGroup('${id}')`:'closeModal()');
+    return;
+  }
+  commitGroup(o,id);
+}
+function commitGroup(o,id){
+  learnEngine(o);
+  if(id){const g=groupById(id);if(!g){toast('Groupe introuvable');return}Object.assign(g,o)}
+  else db.groups.push({id:uid(),created:new Date().toISOString(),...o});
+  if(!save())return;
+  closeModal();toast(id?'Groupe modifié':'Groupe enregistré');
+  if(id)showGroup(id);else nav('groups');
+}
+function confirmDeleteGroup(id){
+  const g=groupById(id);if(!g)return;
+  const n=db.interventions.filter(i=>i.group===id).length;
+  confirmBox('Supprimer le groupe ?',`<b>${esc(groupName(g))}</b><p class="muted section">Ce groupe et ses ${n} intervention(s) seront supprimés. Vous pourrez annuler pendant quelques secondes.</p>`,'Supprimer',()=>{
+    withUndo('Groupe supprimé',()=>{db.groups=db.groups.filter(x=>x.id!==id);db.interventions=db.interventions.filter(i=>i.group!==id)});
+    closeModal();nav('groups');
+  },true,`showGroup('${id}')`);
+}
+
+/* ---------- Fiche groupe ---------- */
+function fiche(g,key){
+  const s=siteOf(g);
+  const R={
+    identification:[['Site',siteName(g.site)],['Wilaya',s.wilaya],['Commune',s.commune],['Nom du groupe',g.code],['Marque',g.brand],['Modèle',g.model],['N° châssis / série',g.chassis],['Puissance apparente',g.kva?g.kva+' kVA':''],['Puissance active',g.kw?g.kw+' kW':''],['Tension',g.voltage?g.voltage+' V':''],['Fréquence',g.freq?g.freq+' Hz':''],['Phases',g.phases==='1'?'Monophasé':g.phases==='3'?'Triphasé':''],['Heures de marche',g.hours],['Prochaine maintenance',isISODate(g.next_maint)?fmtDate(g.next_maint):''],['État',g.state],['Observations',g.notes]],
+    engine:[['Marque',g.engine_brand],['Modèle',g.engine_model],['N° moteur',g.engine_sn]],
+    alternator:[['Marque',g.alt_brand],['Modèle',g.alt_model],['N° alternateur',g.alt_sn]],
+    controller:[['Contrôleur — marque',g.ctrl_brand],['Contrôleur — modèle',g.ctrl_model],['AVR — marque',g.avr_brand],['AVR — modèle',g.avr_model]],
+    filters:[['Filtre à air',g.air_filter],['Filtre à huile',g.oil_filter],['Filtre à gasoil',g.fuel_filter],['Quantité de filtres',g.filter_qty]]
+  };
+  return R[key]||[];
+}
+function historyTable(g){
+  const list=db.interventions.filter(i=>i.group===g.id).sort(intSort);
+  const top=`<div class="actions"><button class="secondary" type="button" onclick="showPreview(interventionSheetHtml('${g.id}'),'Fiche_intervention_vierge.html','Fiche d’intervention')">🖨️ Fiche vierge</button><button class="primary" type="button" onclick="openIntervention('${g.id}')">＋ Intervention</button></div>`;
+  const items=list.map(i=>`<div class="listitem" style="align-items:flex-start"><div style="min-width:0;flex:1"><b>${esc(fmtDate(i.date))} — ${esc(i.type)}</b><div class="muted small">${esc(i.fault||i.work||i.notes||'Pas de détail')}</div>${i.state_after?`<div class="muted small">État après : ${esc(i.state_after)}</div>`:''}</div><button class="secondary" type="button" style="min-height:38px;padding:8px 12px" onclick="showPreview(interventionSheetHtml('${g.id}','${i.id}'),'Fiche_intervention_${i.id}.html','Fiche d’intervention')">🖨️</button></div>`).join('');
+  return top+(list.length?`<div class="list section">${items}</div>`:emptyBox('Aucune intervention pour ce groupe.','Utilisez « ＋ Intervention » pour en ajouter une.'));
+}
+function showGroup(id,tab='identification'){
+  const g=groupById(id);if(!g)return;
+  const body=tab==='history'?historyTable(g):`<div class="formgrid">${fiche(g,tab).map(([l,val])=>`<div class="fv${l==='Observations'?' full':''}"><span class="fl">${esc(l)}</span><div class="fval">${esc(v(val))}</div></div>`).join('')}</div>`;
+  modal('Fiche groupe',`<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div style="min-width:0"><b>${esc(groupName(g))}</b><div class="muted small">${esc(siteName(g.site))}</div></div><span class="tag ${stateCls(g.state)}">${esc(g.state||'—')}</span></div>
+    <div class="tabs">${FICHE_TABS.map(([k,l])=>`<button class="tab ${k===tab?'active':''}" type="button" onclick="showGroup('${id}','${k}')">${l}</button>`).join('')}</div>
+    ${body}
+    <div class="actions section"><button class="primary" type="button" onclick="openIntervention('${id}')">＋ Intervention</button><button class="secondary" type="button" onclick="openGroupForm('${id}')">✏️ Modifier</button><button class="secondary" type="button" onclick="exportGroupCsv('${id}')">📊 Excel</button><button class="secondary" type="button" onclick="openPrint({single:'${id}'})">🖨️ Imprimer</button><button class="secondary danger" type="button" onclick="confirmDeleteGroup('${id}')">🗑️ Supprimer</button></div>`);
+}
+
+/* ---------- Interventions ---------- */
+function interventionFields(i){const g=groupById(i.group);return [i.date,i.type,i.fault,i.work,i.notes,i.state_after,...(i.damaged||[]),...(i.repaired||[]),g?groupName(g):'',g?siteName(g.site):''].filter(x=>x!=null&&x!=='').map(String)}
+function partOptionNames(){
+  const m=new Map();
+  const add=n=>{const t=String(n||'').trim();if(t&&!m.has(compact(t)))m.set(compact(t),t)};
+  DEFAULT_PARTS.forEach(add);db.parts.forEach(p=>add(p.name));
+  return [...m.values()].sort((a,b)=>a.localeCompare(b,'fr'));
+}
+function partChecks(selected=[]){
+  const sel=new Set(selected||[]);
+  const names=partOptionNames();
+  (selected||[]).forEach(s=>{if(!names.some(n=>compact(n)===compact(s)))names.push(s)});
+  return names.map(n=>`<label class="checkitem"><input type="checkbox" value="${esc(n)}" ${sel.has(n)?'checked':''}> ${esc(n)}</label>`).join('');
+}
+function checkedVals(cid){return [...document.querySelectorAll('#'+cid+' input[type=checkbox]:checked')].map(x=>x.value)}
+function addPart(cid,inId){
+  const inp=$(inId);
+  const name=String(inp.value||'').trim().replace(/\s+/g,' ');
+  if(!name){toast('Écrivez le nom de la pièce.');return}
+  const checked=checkedVals(cid);
+  if(!db.parts.some(p=>compact(p.name)===compact(name))){
+    db.parts.push({id:uid(),name,type:'Autre pièce',brand:'',notes:'',similarIds:[],created:new Date().toISOString()});
+    save();
+  }
+  const box=$(cid);
+  box.innerHTML=partChecks([...checked,name]);
+  const cb=[...box.querySelectorAll('input[type=checkbox]')].find(x=>compact(x.value)===compact(name));
+  if(cb)cb.checked=true;
+  inp.value='';toast('Pièce ajoutée à la liste');
+}
+function openIntervention(gid='',editId=''){
+  if(!db.groups.length){toast('Créez d’abord un groupe');return}
+  const old=editId?db.interventions.find(x=>x.id===editId):null;
+  if(editId&&!old){toast('Intervention introuvable');return}
+  const d=old||{group:gid,date:todayISO(),type:'Diagnostic',state_after:'',next_maint:'',fault:'',work:'',damaged:[],repaired:[],notes:''};
+  const gOpts='<option value="">— Choisir un groupe —</option>'+db.groups.slice().sort((a,b)=>groupName(a).localeCompare(groupName(b),'fr')).map(g=>`<option value="${g.id}" ${g.id===d.group?'selected':''}>${esc(groupName(g))} — ${esc(siteName(g.site))}</option>`).join('');
+  modal(old?'Modifier l’intervention':'Nouvelle intervention',`<form onsubmit="saveIntervention(event,'${old?old.id:''}')">
+    <div class="formgrid">
+      <div class="field full"><label>Groupe *</label><select id="i_group" required>${gOpts}</select></div>
+      <div class="field"><label>Date *</label><input id="i_date" type="date" required value="${esc(d.date)}" max="${todayISO()}"></div>
+      <div class="field"><label>Type *</label><select id="i_type" required>${INT_TYPES.map(t=>`<option ${t===d.type?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="field"><label>Nouvel état du groupe</label><select id="i_state"><option value="">Ne pas changer</option>${STATES.map(s=>`<option ${s===d.state_after?'selected':''}>${s}</option>`).join('')}</select></div>
+      <div class="field"><label>Prochaine maintenance (optionnel)</label><input id="i_next" type="date" value="${esc(d.next_maint||'')}"></div>
+      <div class="field full"><label>Défaut / alarme</label><input id="i_fault" value="${esc(d.fault)}"></div>
+      <div class="field full"><label>Pièce(s) endommagée(s)</label><div id="damagedParts" class="checklist">${partChecks(d.damaged||[])}</div><div class="actions"><input id="newDamagedPart" placeholder="Autre pièce…"><button class="secondary" type="button" onclick="addPart('damagedParts','newDamagedPart')">＋ Ajouter</button></div></div>
+      <div class="field full"><label>Pièce(s) réparée(s) ou échangée(s)</label><div id="repairedParts" class="checklist">${partChecks(d.repaired||[])}</div><div class="actions"><input id="newRepairedPart" placeholder="Autre pièce…"><button class="secondary" type="button" onclick="addPart('repairedParts','newRepairedPart')">＋ Ajouter</button></div></div>
+      <div class="field full"><label>Diagnostic / travaux réalisés</label><textarea id="i_work">${esc(d.work)}</textarea></div>
+      <div class="field full"><label>Observations</label><textarea id="i_notes">${esc(d.notes)}</textarea></div>
+    </div>
+    <div class="actions"><button class="primary" type="submit">${old?'Enregistrer les modifications':'Enregistrer l’intervention'}</button><button class="secondary" type="button" onclick="${old?`showGroup('${old.group}')`:'closeModal()'}">Annuler</button>${old?`<button class="secondary danger" type="button" onclick="confirmDeleteIntervention('${old.id}')">🗑️ Supprimer</button>`:''}</div>
+  </form>`);
+}
+function saveIntervention(e,id){
+  e.preventDefault();
+  const o={group:$('i_group').value,date:$('i_date').value,type:$('i_type').value,state_after:$('i_state').value,next_maint:$('i_next').value,fault:$('i_fault').value.trim(),work:$('i_work').value.trim(),notes:$('i_notes').value.trim(),damaged:checkedVals('damagedParts'),repaired:checkedVals('repairedParts')};
+  if(!groupById(o.group)){toast('Choisissez le groupe concerné.');return}
+  if(!isISODate(o.date)){toast('Date invalide.');return}
+  if(o.date>todayISO()){toast('La date ne peut pas être dans le futur.');return}
+  if(!INT_TYPES.includes(o.type)){toast('Choisissez le type d’intervention.');return}
+  if(o.next_maint&&!isISODate(o.next_maint)){toast('Date de prochaine maintenance invalide.');return}
+  if(id){const rec=db.interventions.find(x=>x.id===id);if(!rec){toast('Intervention introuvable');return}Object.assign(rec,o)}
+  else db.interventions.push({id:uid(),created:new Date().toISOString(),...o});
+  const g=groupById(o.group);
+  if(g){if(o.state_after)g.state=o.state_after;if(o.next_maint)g.next_maint=o.next_maint}
+  if(!save())return;
+  closeModal();toast(id?'Intervention modifiée':'Intervention enregistrée');
+  renderAll();
+}
+function confirmDeleteIntervention(id){
+  const i=db.interventions.find(x=>x.id===id);if(!i)return;
+  confirmBox('Supprimer cette intervention ?',`<b>${esc(fmtDate(i.date))} — ${esc(i.type)}</b><p class="muted section">Vous pourrez annuler pendant quelques secondes.</p>`,'Supprimer',()=>{
+    withUndo('Intervention supprimée',()=>{db.interventions=db.interventions.filter(x=>x.id!==id)});
+    closeModal();renderAll();
+  },true,`openIntervention('','${id}')`);
+}
+function intCard(i){
+  const g=groupById(i.group);
+  return `<div class="listitem" style="align-items:flex-start"><div style="min-width:0;flex:1"><b>${esc(fmtDate(i.date))} — ${esc(i.type)}</b><div class="muted">${esc(g?groupName(g):'Groupe supprimé')}${g?' · '+esc(siteName(g.site)):''}</div>${i.fault?`<div class="muted small">Défaut : ${esc(i.fault)}</div>`:''}${(i.damaged||[]).length?`<div class="muted small">Endommagée(s) : ${esc(i.damaged.join(', '))}</div>`:''}${(i.repaired||[]).length?`<div class="muted small">Réparée(s) / échangée(s) : ${esc(i.repaired.join(', '))}</div>`:''}${i.state_after?`<div class="muted small">État après : ${esc(i.state_after)}</div>`:''}</div><div class="actions" style="flex-direction:column;gap:6px"><button class="secondary" type="button" style="min-height:38px;padding:8px 12px" onclick="openIntervention('','${i.id}')">✏️</button><button class="secondary danger" type="button" style="min-height:38px;padding:8px 12px" onclick="confirmDeleteIntervention('${i.id}')">🗑️</button></div></div>`;
+}
+function renderInterventions(){
+  const gSel=$('intGroupFilter'),tSel=$('intTypeFilter');if(!gSel||!tSel)return;
+  const gCur=gSel.value,tCur=tSel.value;
+  gSel.innerHTML='<option value="">Tous les groupes</option>'+db.groups.slice().sort((a,b)=>groupName(a).localeCompare(groupName(b),'fr')).map(g=>`<option value="${g.id}">${esc(groupName(g))}</option>`).join('');
+  gSel.value=gCur;
+  tSel.innerHTML='<option value="">Tous les types</option>'+INT_TYPES.map(t=>`<option>${t}</option>`).join('');
+  tSel.value=tCur;
+  const q=$('intSearch').value,gf=gSel.value,tf=tSel.value;
+  const list=db.interventions.filter(i=>(!gf||i.group===gf)&&(!tf||i.type===tf)&&matches(interventionFields(i),q)).sort(intSort);
+  $('interventionList').innerHTML=list.length?list.map(intCard).join(''):emptyBox(db.interventions.length?'Aucune intervention ne correspond.':'Aucune intervention.',db.interventions.length?'Modifiez la recherche ou les filtres.':'Utilisez « ＋ Intervention » pour commencer l’historique.');
+}
+
+/* ---------- Base de pièces ---------- */
+const similarOf=p=>(p.similarIds||[]).map(id=>db.parts.find(x=>x.id===id)).filter(Boolean);
+function groupsUsingPart(p){
+  const names=[p,...similarOf(p)].map(x=>compact(x.name)).filter(Boolean);
+  return db.groups.filter(g=>['air_filter','oil_filter','fuel_filter'].some(k=>names.includes(compact(g[k]))));
+}
+const partFields=p=>[p.name,p.type,p.brand,p.notes].filter(Boolean).map(String);
+function partCard(p){
+  const eq=similarOf(p),used=groupsUsingPart(p);
+  return `<div class="listitem" style="align-items:flex-start"><div style="min-width:0;flex:1"><b>${esc(p.name)}</b><div class="muted">${esc(p.type)}${p.brand?' · '+esc(p.brand):''}</div>${p.notes?`<div class="muted small">Compatibilité / notes : ${esc(p.notes)}</div>`:''}<div class="muted small"><b>Équivalents :</b> ${eq.length?eq.map(x=>esc(x.name)).join(' · '):'aucun'}</div>${used.length?`<div class="muted small"><b>Utilisée sur :</b> ${used.map(g=>esc(groupName(g))).join(' · ')}</div>`:''}</div><div class="actions" style="flex-direction:column;gap:6px"><button class="secondary" type="button" style="min-height:38px;padding:8px 12px" onclick="openPartForm('${p.id}')">✏️</button><button class="secondary danger" type="button" style="min-height:38px;padding:8px 12px" onclick="confirmDeletePart('${p.id}')">🗑️</button></div></div>`;
+}
+function renderParts(){
+  const box=$('partsList');if(!box)return;
+  const q=$('partsSearch').value,t=$('partsTypeFilter').value;
+  const list=db.parts.filter(p=>(!t||p.type===t)&&matches(partFields(p),q)).sort((a,b)=>a.type.localeCompare(b.type,'fr')||a.name.localeCompare(b.name,'fr'));
+  $('partsCount').textContent=`${list.length} référence(s) affichée(s) sur ${db.parts.length} enregistrée(s)`;
+  box.innerHTML=list.length?list.map(partCard).join(''):emptyBox(db.parts.length?'Aucune référence ne correspond.':'Base vide.',db.parts.length?'Modifiez la recherche.':'Ajoutez vos filtres et pièces avec « ＋ Ajouter une référence ».');
+}
+function openPartForm(id=''){
+  const p=id?db.parts.find(x=>x.id===id):null;
+  if(id&&!p){toast('Référence introuvable');return}
+  const d=p||{type:'Filtre à huile',name:'',brand:'',notes:''};
+  modal(p?'Modifier la référence':'Nouvelle référence',`<form onsubmit="savePart(event,'${p?p.id:''}')">
+    <p class="muted small">Les équivalents doivent être du même type : huile avec huile, gasoil avec gasoil, air avec air.</p>
+    <div class="formgrid">
+      <div class="field"><label>Type *</label><select id="p_type" required onchange="refreshPartSimilar('${p?p.id:''}')">${TYPES_REF.map(t=>`<option ${t===d.type?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="field"><label>Référence / désignation *</label><input id="p_name" required value="${esc(d.name)}"></div>
+      <div class="field"><label>Marque</label><input id="p_brand" list="dl_brand" value="${esc(d.brand)}">${dl('brand')}</div>
+      <div class="field"><label>Compatibilité / notes</label><input id="p_notes" value="${esc(d.notes)}" placeholder="Diamètre, moteur compatible…"></div>
+      <div class="field full"><label>Références équivalentes (même type)</label><div id="p_similar" class="checklist"></div></div>
+    </div>
+    <div class="actions"><button class="primary" type="submit">${p?'Enregistrer':'Ajouter à la base'}</button><button class="secondary" type="button" onclick="closeModal()">Annuler</button>${p?`<button class="secondary danger" type="button" onclick="confirmDeletePart('${p.id}')">🗑️ Supprimer</button>`:''}</div>
+  </form>`);
+  refreshPartSimilar(p?p.id:'');
+}
+function refreshPartSimilar(id){
+  const box=$('p_similar');if(!box)return;
+  const type=$('p_type').value;
+  const cur=id?db.parts.find(x=>x.id===id):null;
+  const sel=new Set(cur?cur.similarIds||[]:[]);
+  const list=db.parts.filter(x=>x.type===type&&x.id!==id);
+  box.innerHTML=list.length?list.map(x=>`<label class="checkitem"><input type="checkbox" value="${x.id}" ${sel.has(x.id)?'checked':''}> ${esc(x.name)} <span class="muted small">${esc(x.brand||'')}</span></label>`).join(''):'<span class="muted small">Aucune autre référence de ce type pour l’instant.</span>';
+}
+function savePart(e,id){
+  e.preventDefault();
+  const o={type:$('p_type').value,name:$('p_name').value.trim(),brand:$('p_brand').value.trim(),notes:$('p_notes').value.trim()};
+  if(!o.name){toast('Indiquez la référence.');return}
+  if(db.parts.some(p=>p.id!==id&&p.type===o.type&&compact(p.name)===compact(o.name)&&compact(p.brand)===compact(o.brand))){toast('Cette référence existe déjà dans ce type et cette marque.');return}
+  const sel=[...document.querySelectorAll('#p_similar input:checked')].map(x=>x.value);
+  let p=id?db.parts.find(x=>x.id===id):null;
+  if(id&&!p){toast('Référence introuvable');return}
+  if(!p){p={id:uid(),created:new Date().toISOString(),similarIds:[]};db.parts.push(p)}
+  Object.assign(p,o);
+  // On retire d’abord l’ancien lien, puis on pose la nouvelle liste
+  db.parts.forEach(x=>{if(x!==p)x.similarIds=(x.similarIds||[]).filter(s=>s!==p.id)});
+  p.similarIds=sel.slice();
+  relinkParts(db.parts);
+  if(!save())return;
+  closeModal();toast('Référence enregistrée');renderAll();
+}
+function confirmDeletePart(id){
+  const p=db.parts.find(x=>x.id===id);if(!p)return;
+  confirmBox('Supprimer la référence ?',`<b>${esc(p.name)}</b><p class="muted section">Elle sera retirée des équivalents. Les interventions déjà saisies gardent le nom de la pièce.</p>`,'Supprimer',()=>{
+    withUndo('Référence supprimée',()=>{
+      db.parts=db.parts.filter(x=>x.id!==id);
+      db.parts.forEach(x=>{x.similarIds=(x.similarIds||[]).filter(s=>s!==id)});
+      relinkParts(db.parts);
+    });
+    closeModal();renderAll();
+  },true,id?`openPartForm('${id}')`:'closeModal()');
+}
+
+/* GE Manager v2.1 — apparence, langue, rappels, catalogue moteurs, plaque signalétique, fiche d'intervention */
+const I18N={
+  fr:{nav_home:'Accueil',nav_sites:'Sites',nav_groups:'Groupes',nav_parts:'Pièces',nav_interv:'Interventions',nav_more:'Plus',
+    dash_title:'Tableau de bord',dash_sub:'Votre parc technique',m_sites:'Sites',m_groups:'Groupes',m_down:'En panne',m_interv:'Interventions',
+    search_title:'Recherche générale',btn_new_group:'＋ Nouveau groupe',btn_new_site:'＋ Nouveau site',btn_interv:'＋ Intervention',btn_part:'＋ Référence pièce',recent:'Groupes récents',
+    backup_title:'Pensez à sauvegarder vos données',backup_now:'Sauvegarder maintenant',hide_today:'Masquer jusqu’à demain',hide_week:'Masquer 7 jours',
+    settings_title:'Paramètres',theme_label:'Thème',th_light:'Clair',th_dark:'Sombre',th_auto:'Automatique',lang_label:'Langue',catalogue_title:'Modèles moteurs et filtres',settings_saved:'Réglages enregistrés'},
+  en:{nav_home:'Home',nav_sites:'Sites',nav_groups:'Generators',nav_parts:'Parts',nav_interv:'Interventions',nav_more:'More',
+    dash_title:'Dashboard',dash_sub:'Your generator fleet',m_sites:'Sites',m_groups:'Generators',m_down:'Down',m_interv:'Interventions',
+    search_title:'Global search',btn_new_group:'＋ New generator',btn_new_site:'＋ New site',btn_interv:'＋ Intervention',btn_part:'＋ Part reference',recent:'Recent generators',
+    backup_title:'Remember to back up your data',backup_now:'Back up now',hide_today:'Hide until tomorrow',hide_week:'Hide 7 days',
+    settings_title:'Settings',theme_label:'Theme',th_light:'Light',th_dark:'Dark',th_auto:'Automatic',lang_label:'Language',catalogue_title:'Engine models and filters',settings_saved:'Settings saved'},
+  ar:{nav_home:'الرئيسية',nav_sites:'المواقع',nav_groups:'المولدات',nav_parts:'القطع',nav_interv:'التدخلات',nav_more:'المزيد',
+    dash_title:'لوحة التحكم',dash_sub:'أسطول المولدات الكهربائية',m_sites:'المواقع',m_groups:'المولدات',m_down:'معطلة',m_interv:'التدخلات',
+    search_title:'بحث عام',btn_new_group:'＋ مولد جديد',btn_new_site:'＋ موقع جديد',btn_interv:'＋ تدخل',btn_part:'＋ مرجع قطعة',recent:'المولدات الأخيرة',
+    backup_title:'تذكير: قم بنسخ بياناتك احتياطياً',backup_now:'نسخ احتياطي الآن',hide_today:'إخفاء حتى الغد',hide_week:'إخفاء 7 أيام',
+    settings_title:'الإعدادات',theme_label:'المظهر',th_light:'فاتح',th_dark:'داكن',th_auto:'تلقائي',lang_label:'اللغة',catalogue_title:'نماذج المحركات والفلاتر',settings_saved:'تم حفظ الإعدادات'}
+};
+const tr=k=>{const d=I18N[settings.lang]||I18N.fr;if(d[k]!==undefined)return d[k];return I18N.fr[k]!==undefined?I18N.fr[k]:k};
+function applyLang(){
+  const L=I18N[settings.lang]?settings.lang:'fr';
+  document.documentElement.lang=L;
+  document.documentElement.dir=L==='ar'?'rtl':'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=tr(el.getAttribute('data-i18n'))});
+}
+function applyTheme(){
+  const m=settings.theme||'light';
+  const dark=m==='dark'||(m==='auto'&&!!(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches));
+  document.documentElement.classList.toggle('dark',dark);
+}
+function saveAppearance(){
+  settings.theme=$('setTheme').value;settings.lang=$('setLang').value;
+  saveSettings();applyTheme();applyLang();renderAll();toast(tr('settings_saved'));
+}
+function initAppearance(){
+  $('setTheme').value=settings.theme||'light';
+  $('setLang').value=settings.lang||'fr';
+  applyTheme();applyLang();
+  if(window.matchMedia){const mq=window.matchMedia('(prefers-color-scheme: dark)');if(mq.addEventListener)mq.addEventListener('change',applyTheme)}
+}
+
+/* ---------- Rappels masquables ---------- */
+const endOfDay=()=>{const d=new Date();d.setHours(24,0,0,0);return d.toISOString()};
+const plusDays=n=>new Date(Date.now()+n*864e5).toISOString();
+const isSnoozed=k=>{const t0=(settings.snoozes||{})[k];return !!t0&&Date.parse(t0)>Date.now()};
+function snooze(k,until){settings.snoozes=settings.snoozes||{};settings.snoozes[k]=until;saveSettings();renderDashboard()}
+function goGroups(q){$('groupSearch').value=q;nav('groups')}
+
+/* ---------- Catalogue moteurs : mêmes filtres pour un même modèle ---------- */
+const ENGINE_FIELDS=['air_filter','oil_filter','fuel_filter','filter_qty'];
+const engineKey=(b,m)=>{const x=compact(b),y=compact(m);return x&&y?x+'|'+y:''};
+const fieldVal=id=>{const el=$(id);return el?String(el.value||'').trim():''};
+function catalogue(){return db.engineFilters||{}}
+function applyEngineFilters(force){
+  const k=engineKey(fieldVal('f_engine_brand'),fieldVal('f_engine_model'));
+  const hint=$('f_engine_hint');
+  const e=k?catalogue()[k]:null;
+  if(!e){if(hint)hint.textContent=k?'Aucun filtre mémorisé pour ce modèle. Ils seront mémorisés à l’enregistrement du groupe.':'';return}
+  ENGINE_FIELDS.forEach(f=>{const el=$('f_'+f);if(!el)return;if(force||!String(el.value||'').trim())el.value=e[f]||''});
+  if(hint)hint.textContent='Filtres suggérés d’après le modèle moteur. Vous pouvez les modifier ou les effacer.';
+}
+function clearEngineFilters(){
+  ENGINE_FIELDS.forEach(f=>{const el=$('f_'+f);if(el)el.value=''});
+  const h=$('f_engine_hint');if(h)h.textContent='Filtres effacés.';
+}
+function learnEngine(o){
+  const k=engineKey(o.engine_brand,o.engine_model);if(!k)return;
+  if(!db.engineFilters)db.engineFilters={};
+  const f={label:[o.engine_brand,o.engine_model].filter(Boolean).join(' ')};
+  ENGINE_FIELDS.forEach(x=>{f[x]=o[x]||''});
+  if(ENGINE_FIELDS.some(x=>f[x]))db.engineFilters[k]=f;
+}
+function renderCatalogue(){
+  const box=$('catalogueList');if(!box)return;
+  const cat=catalogue();const keys=Object.keys(cat);
+  box.innerHTML=keys.length?keys.map(k=>{const e=cat[k];return `<div class="listitem"><div style="min-width:0;flex:1"><b>${esc(e.label||k)}</b><div class="muted small">Air : ${esc(e.air_filter||'—')} · Huile : ${esc(e.oil_filter||'—')} · Gasoil : ${esc(e.fuel_filter||'—')} · Qté : ${esc(e.filter_qty||'—')}</div></div><button class="secondary danger" type="button" style="min-height:38px;padding:8px 12px" onclick="confirmDeleteEngine('${k}')">🗑️</button></div>`}).join(''):emptyBox('Aucun modèle mémorisé.','Les filtres sont mémorisés à l’enregistrement d’un groupe avec son modèle moteur.');
+}
+function confirmDeleteEngine(k){
+  const e=catalogue()[k];if(!e)return;
+  confirmBox('Supprimer ce modèle ?',`<b>${esc(e.label||k)}</b><p class="muted section">Les groupes existants gardent leurs filtres. Seule la suggestion automatique disparaît.</p>`,'Supprimer',()=>{
+    withUndo('Modèle supprimé',()=>{delete db.engineFilters[k]});
+    closeModal();renderAll();
+  });
+}
+
+/* ---------- Photo de la plaque signalétique ---------- */
+function loadScript(src){
+  return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=()=>res();s.onerror=()=>rej(new Error('bibliothèque de lecture non téléchargée'));document.head.appendChild(s)});
+}
+let ocrReady=null;
+async function ocrImage(file){
+  if(!window.Tesseract){if(!ocrReady)ocrReady=loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js');await ocrReady}
+  const r=await window.Tesseract.recognize(file,'fra+eng');
+  return (r&&r.data&&r.data.text)||'';
+}
+const PLATE_BRANDS=['Volvo Penta','Cummins','Perkins','Caterpillar','FG Wilson','Volvo','Mitsubishi','Deutz','Kubota','Iveco','Yanmar','Leroy Somer','Stamford','Mecc Alte','Marelli','Lister Petter','Baudouin','Hyundai','Doosan','Weichai','SDMO','Pramac','Himoinsa','Genesis','MTU','JCB','Lombardini','Ruggerini'];
+function parseNameplate(text){
+  const T=String(text||'').replace(/\s+/g,' ');
+  const out={};
+  const num=re=>{const m=T.match(re);return m?m[1].replace(',','.'):''};
+  for(const b of PLATE_BRANDS){
+    const esc2=b.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/ /g,'\\s+');
+    const m=T.match(new RegExp('\\b'+esc2+'\\b\\s*[:\\-]?\\s*(?:mod[eè]le\\s*[:\\-]?\\s*)?([A-Z0-9][A-Z0-9.\\-\\/]{1,})','i'));
+    if(m){out.brand=b;if(/\d/.test(m[1]))out.model=m[1].replace(/[.\-\/]+$/,'');break}
+  }
+  const kva=num(/(\d+(?:[.,]\d+)?)\s*kVA/i);if(kva)out.kva=kva;
+  const kw=num(/(\d+(?:[.,]\d+)?)\s*kW(?!A)/i);if(kw)out.kw=kw;
+  const vs=T.match(/\d{3,4}\s*V(?![A-Za-z])/g);
+  if(vs){const n=vs.map(x=>parseInt(x,10)).filter(x=>x>=100&&x<=760);if(n.length)out.voltage=String(n[n.length-1])}
+  const f=num(/(\d{2})\s*Hz/i);if(f==='50'||f==='60')out.freq=f;
+  if(/mono[\s-]?phas|single[\s-]?phase|\b1\s*ph\b/i.test(T))out.phases='1';
+  else if(/tri[\s-]?phas|three[\s-]?phase|\b3\s*ph\b/i.test(T))out.phases='3';
+  const sn=T.match(/(?:s\/n|n[°o]?\s*de\s*s[ée]rie|serial(?:\s*(?:no|number))?|n\/s|num[ée]ro\s*de\s*s[ée]rie)\s*[:.\-]?\s*([A-Z0-9][A-Z0-9\-\/]{3,})/i);
+  if(sn)out.chassis=sn[1];
+  return out;
+}
+function fillFromPlate(d){
+  const map={brand:'f_brand',model:'f_model',chassis:'f_chassis',kva:'f_kva',kw:'f_kw',voltage:'f_voltage',freq:'f_freq',phases:'f_phases'};
+  let n=0;
+  Object.keys(map).forEach(k=>{
+    const val=d[k];if(!val)return;
+    const el=$(map[k]);if(!el)return;
+    if(el.tagName==='SELECT'){
+      if(![...el.options].some(o=>o.value===val))return;
+      el.value=val;n++;return;
+    }
+    if(String(el.value||'').trim())return;   // on ne remplace pas ce qui est déjà saisi
+    el.value=val;n++;
+  });
+  return n;
+}
+async function scanPlate(e){
+  const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+  const st=$('plateStatus');if(st)st.textContent='Lecture de la plaque en cours…';
+  try{
+    const text=await ocrImage(f);
+    const d=parseNameplate(text);
+    const n=fillFromPlate(d);
+    const raw=$('plateRaw'),det=$('plateDetails');
+    if(raw)raw.textContent=text;if(det)det.hidden=false;
+    if(st)st.textContent=n?`${n} champ(s) remplis. Vérifiez-les avant d’enregistrer. Les champs déjà saisis ne sont pas modifiés.`:'Rien de reconnu. Reprenez la photo bien éclairée, de face et nette.';
+  }catch(err){
+    if(st)st.textContent='Lecture impossible : '+((err&&err.message)||err)+'. Vérifiez la connexion Internet, puis réessayez.';
+  }
+}
+
+/* ---------- Fiche d'intervention imprimable ---------- */
+function showPreview(html,name,title){
+  previewHtml=html;previewName=name;
+  $('pvTitle').textContent=title||'Aperçu';
+  $('pvFrame').srcdoc=html;
+  $('preview').classList.add('open');
+}
+function interventionSheetHtml(gid,iid){
+  const g=groupById(gid)||{};const s=siteOf(g);
+  const i=(iid&&db.interventions.find(x=>x.id===iid))||{};
+  const row=(l,val)=>`<tr><th>${esc(l)}</th><td>${esc(v(val))}</td></tr>`;
+  const lines=n=>'<div class="line"></div>'.repeat(n);
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fiche d’intervention</title><style>${PRINT_CSS}.line{border-bottom:1px solid #999;height:22px;margin:4px 0}</style></head><body>
+<header><h1>Fiche d’intervention</h1><p>SARL Very Fast · ${esc(fmtDate(i.date||todayISO()))}</p></header>
+<table class="kv">${row('Site',siteName(g.site))}${row('Wilaya',s.wilaya)}${row('Commune',s.commune)}${row('Groupe',g.id?groupName(g):'')}${row('N° moteur',g.engine_sn)}${row('N° alternateur',g.alt_sn)}${row('Heures de marche',g.hours)}${row('Type d’intervention',i.type)}${row('Date',i.date?fmtDate(i.date):'')}</table>
+<h3>Défaut / alarme</h3><div>${esc(i.fault||'')}</div>${lines(2)}
+<h3>Diagnostic et travaux réalisés</h3><div>${esc(i.work||'')}</div>${lines(4)}
+<h3>Pièces endommagées</h3><div>${esc((i.damaged||[]).join(', '))}</div>${lines(1)}
+<h3>Pièces remplacées</h3><div>${esc((i.repaired||[]).join(', '))}</div>${lines(1)}
+<h3>Nouvel état du groupe</h3><div>${esc(i.state_after||'')}</div>
+<h3>Observations</h3>${lines(2)}
+<table class="kv" style="margin-top:18px"><tr><th>Technicien</th><th>Chef de site</th></tr><tr><td style="height:60px"></td><td></td></tr></table>
+</body></html>`;
+}
+/* Reprend les filtres des groupes déjà enregistrés (v1 ou v2) pour alimenter le catalogue */
+function backfillCatalogue(){
+  if(!db.engineFilters)db.engineFilters={};
+  db.groups.forEach(g=>{const k=engineKey(g.engine_brand,g.engine_model);if(k&&!db.engineFilters[k])learnEngine(g)});
+}
+
+/* GE Manager v2.0 — exports, sauvegarde, impression, réglages, démarrage */
+
+/* ---------- Livraison de fichiers (PC, navigateur, APK) ---------- */
+function cleanFolder(s){return String(s||'').replace(/[\\/:*?"<>|]/g,'').trim().slice(0,40)||'GE Manager'}
+function download(name,text,mime){
+  const blob=new Blob([text],{type:mime});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+async function deliverFile(name,text,mime,label){
+  const mode=settings.backupMode||'ask';
+  try{
+    if(isNative()){
+      const Fs=plugin('Filesystem');
+      if(!Fs)return {where:'échec'};
+      if(mode==='app'){
+        try{
+          const folder=cleanFolder(settings.backupFolder);
+          await Fs.writeFile({path:folder+'/'+name,data:text,directory:'DOCUMENTS',encoding:'utf8',recursive:true});
+          return {where:'Documents/'+folder+'/'+name};
+        }catch(e){/* Android a refusé : on passe au menu Partager */}
+      }
+      const r=await Fs.writeFile({path:name,data:text,directory:'CACHE',encoding:'utf8',recursive:true});
+      const Share=plugin('Share');
+      if(!Share)return {where:'échec'};
+      try{await Share.share({title:label||name,files:[r.uri],dialogTitle:'Enregistrer ou partager'})}
+      catch(e){return {where:'annulé'}}
+      return {where:'partage'};
+    }
+    if(mode==='ask'&&window.showSaveFilePicker){
+      try{
+        const ext=name.split('.').pop();
+        const h=await window.showSaveFilePicker({suggestedName:name,types:[{description:label||'Fichier',accept:{[mime.split(';')[0]]:['.'+ext]}}]});
+        const w=await h.createWritable();await w.write(text);await w.close();
+        return {where:'fichier choisi'};
+      }catch(e){if(e&&e.name==='AbortError')return {where:'annulé'}}
+    }
+    download(name,text,mime);
+    return {where:'Téléchargements'};
+  }catch(e){
+    return {where:'échec'};
+  }
+}
+function reportDelivery(res,ok){
+  if(res.where==='annulé'){toast('Opération annulée');return false}
+  if(res.where==='échec'){toast('Impossible d’enregistrer le fichier sur cet appareil.');return false}
+  toast((ok||'Fichier prêt')+' : '+res.where);return true;
+}
+
+/* ---------- CSV (Excel) ---------- */
+const csvCell=x=>{let s=String(x===undefined||x===null?'':x);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};
+function toCsv(rows){
+  if(!rows.length)return '\ufeff';
+  const keys=[...new Set(rows.flatMap(o=>Object.keys(o)))];
+  return '\ufeff'+keys.map(csvCell).join(';')+'\r\n'+rows.map(o=>keys.map(k=>csvCell(o[k])).join(';')).join('\r\n');
+}
+const groupRows=gs=>gs.map(g=>{const s=siteOf(g);return {
+  'Nom du groupe':groupName(g),'Marque':g.brand||'','Modèle':g.model||'','Site':siteName(g.site),'Wilaya':s.wilaya||'','Commune':s.commune||'',
+  'État':g.state||'','N° châssis / série':g.chassis||'','kVA':g.kva||'','kW':g.kw||'','Tension V':g.voltage||'','Fréquence Hz':g.freq||'','Phases':g.phases||'',
+  'Heures de marche':g.hours||'','Prochaine maintenance':g.next_maint||'',
+  'Moteur marque':g.engine_brand||'','Moteur modèle':g.engine_model||'','N° moteur':g.engine_sn||'',
+  'Alternateur marque':g.alt_brand||'','Alternateur modèle':g.alt_model||'','N° alternateur':g.alt_sn||'',
+  'Contrôleur':[g.ctrl_brand,g.ctrl_model].filter(Boolean).join(' '),'AVR':[g.avr_brand,g.avr_model].filter(Boolean).join(' '),
+  'Filtre à air':g.air_filter||'','Filtre à huile':g.oil_filter||'','Filtre à gasoil':g.fuel_filter||'','Quantité filtres':g.filter_qty||'','Observations':g.notes||''}});
+const intRows=list=>list.map(i=>{const g=groupById(i.group)||{};return {
+  'Date':i.date||'','Groupe':g.id?groupName(g):'','Site':g.id?siteName(g.site):'','Type':i.type||'','Défaut':i.fault||'',
+  'Pièces endommagées':(i.damaged||[]).join(', '),'Pièces réparées / échangées':(i.repaired||[]).join(', '),'Travaux / diagnostic':i.work||'','État après':i.state_after||'','Observations':i.notes||''}});
+const siteRows=()=>db.sites.map(s=>({'Nom du site':s.name,'Wilaya':s.wilaya||'','Commune':s.commune||'','Code site':s.code||'','Adresse':s.address||'','Nombre de groupes':groupsOfSite(s.id).length,'Observations':s.notes||''}));
+const partRows=()=>db.parts.map(p=>({'Type':p.type,'Référence / désignation':p.name,'Marque':p.brand||'','Compatibilité / notes':p.notes||'','Équivalents':similarOf(p).map(x=>x.name).join(' · ')}));
+async function exportCsv(kind,rows,label){
+  const res=await deliverFile(`GE_Manager_${kind}_${stamp()}.csv`,toCsv(rows),'text/csv;charset=utf-8',label);
+  reportDelivery(res,'Export créé');
+}
+function exportGroups(gs){exportCsv('groupes',groupRows(gs),'Export groupes')}
+function exportGroupCsv(id){const g=groupById(id);if(g)exportGroups([g])}
+function exportSites(){exportCsv('sites',siteRows(),'Export sites')}
+function exportInterventions(){exportCsv('interventions',intRows(db.interventions.slice().sort(intSort)),'Export interventions')}
+function exportParts(){exportCsv('references',partRows(),'Export références')}
+function openExport(){
+  modal('Exporter (Excel)',`<div class="list">
+    <button class="listitem" type="button" onclick="exportGroups(db.groups)"><b>Tous les groupes</b><span>CSV</span></button>
+    <button class="listitem" type="button" onclick="exportSites()"><b>Tous les sites</b><span>CSV</span></button>
+    <button class="listitem" type="button" onclick="exportInterventions()"><b>Toutes les interventions</b><span>CSV</span></button>
+    <button class="listitem" type="button" onclick="exportParts()"><b>Références pièces / filtres</b><span>CSV</span></button>
+    <button class="listitem" type="button" onclick="backupNow()"><b>Sauvegarde complète</b><span>JSON</span></button>
+  </div><p class="muted small section">Les fichiers CSV s’ouvrent dans Excel avec les colonnes en français. Pour une impression, utilisez « Imprimer / rapports ».</p>`);
+}
+
+/* ---------- Sauvegarde et restauration ---------- */
+async function backupNow(){
+  const name='GE_Manager_sauvegarde_'+stamp()+'.json';
+  const res=await deliverFile(name,JSON.stringify(db,null,2),'application/json','Sauvegarde GE Manager');
+  if(res.where!=='annulé'&&res.where!=='échec'){settings.lastBackupAt=new Date().toISOString();saveSettings()}
+  reportDelivery(res,'Sauvegarde');renderAll();
+}
+let pendingImport=null;
+function importFile(e){
+  const f=e.target.files&&e.target.files[0];
+  e.target.value='';
+  if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    let x;
+    try{x=JSON.parse(String(r.result||''))}catch(_){toast('Fichier invalide : ce n’est pas une sauvegarde GE Manager.');return}
+    if(!looksLikeBackup(x)){toast('Fichier invalide : sauvegarde GE Manager attendue.');return}
+    try{pendingImport=normalizeDb(x)}catch(_){toast('Fichier invalide.');return}
+    const c=pendingImport;
+    modal('Restaurer cette sauvegarde ?',`<div class="card"><b>Contenu du fichier</b><p class="muted">${c.sites.length} site(s) · ${c.groups.length} groupe(s) · ${c.interventions.length} intervention(s) · ${c.parts.length} référence(s)</p></div>
+      <div class="warnbox">Les données actuelles de cet appareil seront remplacées. Une copie de sécurité est gardée automatiquement.</div>
+      <div class="actions section"><button class="secondary" type="button" onclick="closeModal()">Annuler</button><button class="primary btn-danger" type="button" onclick="confirmImport()">Restaurer</button></div>`);
+  };
+  r.onerror=()=>toast('Lecture du fichier impossible.');
+  r.readAsText(f);
+}
+function confirmImport(){
+  if(!pendingImport)return;
+  try{localStorage.setItem(BEFORE_IMPORT_KEY,JSON.stringify(db))}catch(_){}
+  db=pendingImport;pendingImport=null;
+  backfillCatalogue();
+  if(!save())return;
+  closeModal();renderAll();toast('Sauvegarde restaurée');
+}
+function backupDueText(){
+  return settings.lastBackupAt?'Dernière sauvegarde : '+fmtDateTime(settings.lastBackupAt):'Aucune sauvegarde faite sur cet appareil.';
+}
+function backupModeHint(){
+  const m=$('setMode')?$('setMode').value:settings.backupMode;
+  const h=$('setHint');if(!h)return;
+  h.textContent=m==='app'
+    ? 'Le fichier est écrit dans Documents / « '+cleanFolder($('setFolder')?$('setFolder').value:settings.backupFolder)+' ». Si Android refuse l’accès, le menu Partager s’ouvre à la place.'
+    : 'Le menu d’enregistrement s’ouvre à chaque fois : vous choisissez Drive, Fichiers ou Téléchargements. Sur PC, la fenêtre d’enregistrement s’ouvre.';
+}
+function renderSettingsCard(){
+  const m=$('setMode');if(!m)return;
+  if(document.activeElement!==m)m.value=settings.backupMode;
+  const f=$('setFolder');if(f&&document.activeElement!==f)f.value=settings.backupFolder;
+  const info=$('backupInfo');if(info)info.textContent=backupDueText();
+  backupModeHint();
+}
+function saveBackupSettings(){
+  settings.backupMode=$('setMode').value==='app'?'app':'ask';
+  settings.backupFolder=cleanFolder($('setFolder').value);
+  saveSettings();renderSettingsCard();toast('Réglages enregistrés');
+}
+
+/* ---------- Impression et rapports ---------- */
+const PRINT_SECTIONS={list:'Liste synthétique des groupes',sheets:'Fiches détaillées des groupes',interventions:'Historique des interventions',sites:'Liste des sites',parts:'Base de références pièces'};
+const PRINT_FICHE={identification:'Identification',engine:'Moteur',alternator:'Alternateur',controller:'Contrôleur et AVR',filters:'Filtres',history:'Historique des interventions'};
+const defaultSections=()=>['list','sheets','interventions','sites','parts'].map(k=>({k,on:k==='list'||k==='sheets'}));
+const defaultFiche=()=>['identification','engine','alternator','controller','filters','history'].map(k=>({k,on:true}));
+let pm={sections:[],fiche:[],groups:[],sel:[],gsort:'name',intOrder:'desc',single:null,title:'Imprimer / rapports'};
+let previewHtml='',previewName='';
+
+const sortGroups=(list,key)=>{
+  const keys={name:groupName,site:g=>siteName(g.site),state:g=>g.state||'',next:g=>g.next_maint||'9999-12-31',created:g=>g.created||''};
+  return list.slice().sort((a,b)=>String(keys[key](a)).localeCompare(String(keys[key](b)),'fr',{numeric:true,sensitivity:'base'}));
+};
+function openPrint(opts={}){
+  if(!db.groups.length&&!db.sites.length&&!db.parts.length){toast('Rien à imprimer pour le moment.');return}
+  const saved=settings.printPrefs||{};
+  const merge=(base,arr)=>{const out=base.map(x=>({...x}));(Array.isArray(arr)?arr:[]).forEach(s=>{const i=out.findIndex(x=>x.k===s.k);if(i>=0){const [it]=out.splice(i,1);out.push({...it,on:!!s.on})}});return out};
+  pm.sections=merge(defaultSections(),saved.sections);
+  pm.fiche=merge(defaultFiche(),saved.fiche);
+  pm.intOrder=settings.intOrder||'desc';
+  pm.gsort='name';
+  pm.groups=sortGroups(db.groups,'name').map(g=>g.id);
+  pm.sel=[...pm.groups];
+  pm.single=opts.single||null;
+  pm.title=pm.single?'Imprimer la fiche':'Imprimer / rapports';
+  if(pm.single){
+    pm.groups=[pm.single];pm.sel=[pm.single];
+    pm.sections=pm.sections.map(s=>({...s,on:s.k==='sheets'}));
+  }
+  modal(pm.title,'<div id="pmBody"></div>');
+  pmBody();
+}
+function orderRows(arr,kind){
+  return arr.map((s,i)=>`<div class="pmrow"><label><input type="checkbox" ${s.on?'checked':''} onchange="pmToggle('${kind}',${i})"> ${esc(kind==='sec'?PRINT_SECTIONS[s.k]:PRINT_FICHE[s.k])}</label><button class="arrow" type="button" onclick="pmMove('${kind}',${i},-1)" ${i===0?'disabled':''} aria-label="Monter">↑</button><button class="arrow" type="button" onclick="pmMove('${kind}',${i},1)" ${i===arr.length-1?'disabled':''} aria-label="Descendre">↓</button></div>`).join('');
+}
+function pmBody(){
+  const b=$('pmBody');if(!b)return;
+  const gRows=pm.groups.map((id,i)=>{const g=groupById(id);if(!g)return '';return `<div class="pmrow"><label><input type="checkbox" ${pm.sel.includes(id)?'checked':''} onchange="pmGroupToggle('${id}')"><span style="min-width:0"><b>${esc(groupName(g))}</b><span class="muted small"> · ${esc(siteName(g.site))} · ${esc(g.state||'')}</span></span></label><button class="arrow" type="button" onclick="pmMoveGroup(${i},-1)" ${i===0?'disabled':''} aria-label="Monter">↑</button><button class="arrow" type="button" onclick="pmMoveGroup(${i},1)" ${i===pm.groups.length-1?'disabled':''} aria-label="Descendre">↓</button></div>`}).join('');
+  b.innerHTML=`
+    <h3>1. Ce qu’il faut imprimer, et dans quel ordre</h3>
+    <p class="pmsub">Cochez les parties à inclure. Les flèches changent l’ordre des parties dans le document.</p>
+    ${orderRows(pm.sections,'sec')}
+    ${pm.sections.some(s=>s.k==='sheets'&&s.on)?`<h3>2. Contenu des fiches groupe</h3><p class="pmsub">Cochez les pages à inclure dans chaque fiche, et leur ordre.</p>${orderRows(pm.fiche,'fiche')}`:''}
+    <h3>3. Groupes à inclure, et leur ordre</h3>
+    <div class="actions"><select id="pmSort" onchange="pmSortGroups(this.value)">
+      <option value="name" ${pm.gsort==='name'?'selected':''}>Trier : nom</option>
+      <option value="site" ${pm.gsort==='site'?'selected':''}>Trier : site</option>
+      <option value="state" ${pm.gsort==='state'?'selected':''}>Trier : état</option>
+      <option value="next" ${pm.gsort==='next'?'selected':''}>Trier : prochaine maintenance</option>
+      <option value="created" ${pm.gsort==='created'?'selected':''}>Trier : date d’ajout</option></select>
+      <button class="secondary" type="button" onclick="pmAllGroups(true)">Tous</button><button class="secondary" type="button" onclick="pmAllGroups(false)">Aucun</button></div>
+    <div class="section">${gRows||emptyBox('Aucun groupe.','')}</div>
+    <h3>4. Ordre des interventions</h3>
+    <select onchange="pmIntOrder(this.value)"><option value="desc" ${pm.intOrder==='desc'?'selected':''}>Plus récentes d’abord</option><option value="asc" ${pm.intOrder==='asc'?'selected':''}>Plus anciennes d’abord</option></select>
+    <div class="actions section"><button class="primary" type="button" onclick="pmPreview()">Aperçu et impression</button><button class="secondary" type="button" onclick="closeModal()">Fermer</button></div>`;
+}
+function pmToggle(kind,i){const arr=kind==='sec'?pm.sections:pm.fiche;arr[i].on=!arr[i].on;pmBody()}
+function pmMove(kind,i,d){const arr=kind==='sec'?pm.sections:pm.fiche;const j=i+d;if(j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];pmBody()}
+function pmGroupToggle(id){pm.sel=pm.sel.includes(id)?pm.sel.filter(x=>x!==id):[...pm.sel,id];pmBody()}
+function pmMoveGroup(i,d){const j=i+d;if(j<0||j>=pm.groups.length)return;[pm.groups[i],pm.groups[j]]=[pm.groups[j],pm.groups[i]];pmBody()}
+function pmSortGroups(key){pm.gsort=key;pm.groups=sortGroups(db.groups.filter(g=>pm.groups.includes(g.id)),key).map(g=>g.id);pmBody()}
+function pmAllGroups(on){pm.sel=on?[...pm.groups]:[];pmBody()}
+function pmIntOrder(x){pm.intOrder=x;pmBody()}
+
+const tbl=(head,rows)=>`<div class="tblwrap"><table><thead><tr>${head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(v(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const PRINT_BUILDERS={
+  list:gs=>`<section><h2>Liste des groupes (${gs.length})</h2>${gs.length?tbl(['Groupe','Site','Moteur','N° moteur','N° châssis','kVA','État'],gs.map(g=>[groupName(g),siteName(g.site),[g.engine_brand,g.engine_model].filter(Boolean).join(' '),g.engine_sn,g.chassis,g.kva,g.state])):'<p class="empty">Aucun groupe sélectionné.</p>'}</section>`,
+  sheets:gs=>{
+    const keys=pm.fiche.filter(f=>f.on).map(f=>f.k);
+    return gs.length?gs.map(g=>`<section class="sheet"><h2>${esc(groupName(g))}</h2><p class="muted">Site : ${esc(siteName(g.site))} · État : ${esc(v(g.state))}</p>${keys.map(k=>k==='history'
+      ?`<h3>${PRINT_FICHE.history}</h3>${historyPrint(g)}`
+      :`<h3>${esc(PRINT_FICHE[k])}</h3><table class="kv">${fiche(g,k).map(([l,val])=>`<tr><th>${esc(l)}</th><td>${esc(v(val))}</td></tr>`).join('')}</table>`).join('')}</section>`).join(''):'<p class="empty">Aucun groupe sélectionné.</p>';
+  },
+  interventions:gs=>{
+    const ids=new Set(gs.map(g=>g.id));
+    const list=db.interventions.filter(i=>ids.has(i.group)).sort(pm.intOrder==='asc'?(a,b)=>intSort(b,a):intSort);
+    return `<section><h2>Historique des interventions (${list.length})</h2>${list.length?tbl(['Date','Groupe','Type','Défaut','Pièces endommagées','Pièces réparées','Travaux','État après'],list.map(i=>{const g=groupById(i.group)||{};return [fmtDate(i.date),g.id?groupName(g):'',i.type,i.fault,(i.damaged||[]).join(', '),(i.repaired||[]).join(', '),i.work,i.state_after]})):'<p class="empty">Aucune intervention pour ces groupes.</p>'}</section>`;
+  },
+  sites:()=>{
+    const list=db.sites.slice().sort((a,b)=>(a.wilaya||'').localeCompare(b.wilaya||'','fr')||a.name.localeCompare(b.name,'fr'));
+    return `<section><h2>Sites (${list.length})</h2>${list.length?tbl(['Site','Wilaya','Commune','Adresse','Code','Groupes'],list.map(s=>[s.name,s.wilaya,s.commune,s.address,s.code,groupsOfSite(s.id).length])):'<p class="empty">Aucun site.</p>'}</section>`;
+  },
+  parts:()=>{
+    const list=db.parts.slice().sort((a,b)=>a.type.localeCompare(b.type,'fr')||a.name.localeCompare(b.name,'fr'));
+    return `<section><h2>Base de références (${list.length})</h2>${list.length?tbl(['Type','Référence','Marque','Compatibilité','Équivalents'],list.map(p=>[p.type,p.name,p.brand,p.notes,similarOf(p).map(x=>x.name).join(' · ')])):'<p class="empty">Aucune référence.</p>'}</section>`;
+  }
+};
+function historyPrint(g){
+  const list=db.interventions.filter(i=>i.group===g.id).sort(intSort);
+  return list.length?tbl(['Date','Type','Défaut','Travaux','État après'],list.map(i=>[fmtDate(i.date),i.type,i.fault,i.work,i.state_after])):'<p class="empty">Aucune intervention.</p>';
+}
+const PRINT_CSS=`@page{size:A4;margin:12mm}*{box-sizing:border-box}
+body{font:12px/1.4 Arial,Helvetica,sans-serif;color:#111;margin:18px}
+header{border-bottom:2px solid #0e1a33;margin-bottom:14px;padding-bottom:6px}
+header h1{font-size:18px;margin:0}header p{margin:2px 0;color:#555;font-size:11px}
+h2{font-size:15px;margin:14px 0 6px}h3{font-size:12.5px;margin:12px 0 4px;color:#0e1a33}
+table{width:100%;border-collapse:collapse;margin-top:4px}
+th,td{border:1px solid #bbb;padding:5px 6px;text-align:left;vertical-align:top}
+th{background:#eef1f7}table.kv th{width:32%;background:#f6f8fc}
+.tblwrap{overflow-x:auto}.sheet{page-break-after:always}.sheet:last-child{page-break-after:auto}
+.muted{color:#666}.empty{color:#666;font-style:italic}
+@media print{body{margin:0}}`;
+function buildPrintHtml(){
+  const gs=pm.groups.filter(id=>pm.sel.includes(id)).map(groupById).filter(Boolean);
+  const blocks=pm.sections.filter(s=>s.on).map(s=>PRINT_BUILDERS[s.k](gs));
+  const title=pm.single&&gs[0]?groupName(gs[0]):'Rapport GE Manager';
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><style>${PRINT_CSS}</style></head><body><header><h1>${esc(title)}</h1><p>SARL Very Fast · Édité le ${esc(fmtDate(todayISO()))}</p></header>${blocks.join('')}</body></html>`;
+}
+function pmPreview(){
+  if(!pm.sections.some(s=>s.on)){toast('Cochez au moins une partie à imprimer.');return}
+  settings.printPrefs={sections:pm.sections.map(({k,on})=>({k,on})),fiche:pm.fiche.map(({k,on})=>({k,on}))};
+  settings.intOrder=pm.intOrder;saveSettings();
+  previewHtml=buildPrintHtml();
+  previewName=(pm.single?'GE_Manager_fiche_':'GE_Manager_rapport_')+stamp()+'.html';
+  $('pvTitle').textContent=pm.single?'Fiche groupe':'Rapport';
+  $('pvFrame').srcdoc=previewHtml;
+  $('preview').classList.add('open');
+  closeModal();
+}
+function closePreview(){$('preview').classList.remove('open');$('pvFrame').srcdoc=''}
+function previewPrint(){
+  try{const f=$('pvFrame');f.contentWindow.focus();f.contentWindow.print()}
+  catch(e){toast('Impression non disponible ici : utilisez « Partager », puis ouvrez le fichier dans Chrome.')}
+}
+async function previewShare(){
+  const res=await deliverFile(previewName,previewHtml,'text/html','Rapport GE Manager');
+  reportDelivery(res,'Rapport');
+}
+
+/* ---------- Application Android : bouton retour ---------- */
+function initNative(){
+  if(!isNative())return;
+  document.documentElement.classList.add('native');
+  const App=plugin('App');
+  if(App&&App.addListener){
+    App.addListener('backButton',()=>{
+      if($('modal').classList.contains('open')){closeModal();return}
+      if($('preview').classList.contains('open')){closePreview();return}
+      if(activeView!=='dashboard'){nav('dashboard');return}
+      if(App.exitApp)App.exitApp();
+    });
+  }
+}
+
+/* ---------- Démarrage ---------- */
+function initStatic(){
+  $('partsTypeFilter').innerHTML='<option value="">Tous les types</option>'+TYPES_REF.map(t=>`<option>${t}</option>`).join('');
+  $('setFolder').value=settings.backupFolder;
+  $('setMode').value=settings.backupMode;
+}
+window.addEventListener('online',updateStorageStatus);
+window.addEventListener('offline',updateStorageStatus);
+function init(){
+  document.querySelectorAll('.nav').forEach(x=>x.onclick=()=>nav(x.dataset.view));
+  initStatic();
+  backfillCatalogue();
+  initAppearance();
+  initNative();
+  renderAll();
+  if(loadError)setTimeout(()=>toast(loadError),400);
+  if('serviceWorker' in navigator&&!isNative()&&location.protocol.startsWith('http')){
+    window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+}
+init();
+
+</script>
+</body>
+</html>
