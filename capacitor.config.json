@@ -1,0 +1,6 @@
+{
+  "appId": "dz.veryfast.gemanager",
+  "appName": "GE Manager",
+  "webDir": "www",
+  "android": { "allowMixedContent": false }
+}
