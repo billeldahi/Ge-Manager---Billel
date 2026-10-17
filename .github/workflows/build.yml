@@ -21,6 +21,19 @@ jobs:
           cp index.html manifest.webmanifest sw.js icon.svg www/
       - run: npm install
       - run: npx cap add android
+      - name: Version de l’appli (Android)
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+        run: |
+          python3 - <<'PY'
+          import re, os
+          p = 'android/app/build.gradle'
+          s = open(p, encoding='utf8').read()
+          s = re.sub(r'versionCode\s+\d+', 'versionCode ' + os.environ['VERSION_CODE'], s, count=1)
+          s = re.sub(r'versionName\s+"[^"]*"', 'versionName "2.3.0"', s, count=1)
+          open(p, 'w', encoding='utf8').write(s)
+          print('Version Android mise à jour')
+          PY
       - name: Permissions de stockage
         run: |
           python3 - <<'PY'
