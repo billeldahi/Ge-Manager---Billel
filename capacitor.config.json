@@ -1,0 +1,17 @@
+{
+  "appId": "dz.veryfast.gemanager",
+  "appName": "GE Manager",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "GoogleAuth": {
+      "scopes": [
+        "https://www.googleapis.com/auth/drive.file"
+      ],
+      "serverClientId": "312021805970-c2am4v4gkv6f53spgo5hjaoac53dee9u.apps.googleusercontent.com",
+      "forceCodeForRefreshToken": false
+    }
+  }
+}
