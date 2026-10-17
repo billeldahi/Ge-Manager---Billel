@@ -303,7 +303,7 @@ a.secondary{text-decoration:none}
     <button class="listitem" type="button" onclick="openExport()">📊 <b>Exporter les données</b><span>Excel / CSV</span></button>
     <button class="listitem" type="button" onclick="openPrint()">🖨️ <b>Imprimer / rapports</b><span>Contenu et ordre</span></button>
   </div>
-  <p class="muted small section">GE Manager v2.0 · données stockées sur cet appareil.</p>
+  <p class="muted small section" id="appVersion">GE Manager · données stockées sur cet appareil.</p>
 </section>
 
 </main>
@@ -1662,7 +1662,10 @@ function renderDriveCard(){
     ?`<button class="primary" type="button" onclick="driveBackupNow()">☁️ Sauvegarder sur Drive</button><button class="secondary" type="button" onclick="openDriveRestore()">📂 Restaurer depuis Drive</button><button class="secondary danger" type="button" onclick="driveDisconnect()">Déconnecter</button>`
     :`<button class="primary" type="button" onclick="driveConnect()">Connecter Google Drive</button>`;
 }
+const APP_VERSION='2.3.0';
+function applyVersion(){const el=$('appVersion');if(el)el.textContent='GE Manager v'+APP_VERSION+' · données stockées sur cet appareil.'}
 function initDrive(){
+  applyVersion();
   window.addEventListener('online',()=>{setTimeout(maybeAutoBackup,1500)});
   setTimeout(maybeAutoBackup,4000);
 }
