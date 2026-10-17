@@ -1,0 +1,58 @@
+name: Build APK
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Préparer le dossier web
+        run: |
+          mkdir -p www
+          cp index.html manifest.webmanifest sw.js icon.svg www/
+      - run: npm install
+      - run: npx cap add android
+      - name: Permissions de stockage
+        run: |
+          python3 - <<'PY'
+          import re
+          p = 'android/app/src/main/AndroidManifest.xml'
+          s = open(p, encoding='utf8').read()
+          perm = '<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />'
+          if 'WRITE_EXTERNAL_STORAGE' not in s:
+              s = re.sub(r'(<manifest[^>]*>)', r'\1\n    ' + perm, s, count=1)
+          if 'requestLegacyExternalStorage' not in s:
+              s = re.sub(r'<application\b', '<application android:requestLegacyExternalStorage="true"', s, count=1)
+          open(p, 'w', encoding='utf8').write(s)
+          print('AndroidManifest mis à jour')
+          PY
+      - name: Clé de signature fixe (mises à jour sans désinstaller)
+        env:
+          DEBUG_KEYSTORE_B64: ${{ secrets.DEBUG_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$DEBUG_KEYSTORE_B64" ]; then
+            mkdir -p "$HOME/.android"
+            echo "$DEBUG_KEYSTORE_B64" | base64 -d > "$HOME/.android/debug.keystore"
+            echo "Clé fixe installée."
+          else
+            echo "::warning::Secret DEBUG_KEYSTORE_B64 absent : la signature changera à chaque build."
+          fi
+      - run: npx cap sync android
+      - name: Compiler l’APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GE-Manager-APK-v2
+          path: android/app/build/outputs/apk/debug/app-debug.apk
